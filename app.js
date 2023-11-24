@@ -1,8 +1,26 @@
+const debug = require("debug")('app');
 var createError = require("http-errors");
 var express = require("express");
 var path = require("path");
 var cookieParser = require("cookie-parser");
 var logger = require("morgan");
+const compression = require("compression");
+const helmet = require("helmet");
+require("dotenv").config();
+
+// Set up mongoose connection
+const mongoose = require("mongoose");
+mongoose.set("strictQuery", false);
+
+const dev_db_url = `mongodb+srv://${process.env.USER_NAME}:${process.env.PASSWORD}@${process.env.URL}/inventory?retryWrites=true&w=majority`;
+
+const mongoDB = process.env.MONGODB_URI || dev_db_url;
+
+main().catch((err) => debug(err));
+async function main() {
+  await mongoose.connect(mongoDB);
+  debug("Connected to MongoDB Atlas");
+}
 
 var indexRouter = require("./routes/index");
 var usersRouter = require("./routes/users");
