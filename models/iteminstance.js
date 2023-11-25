@@ -4,9 +4,9 @@ const Schema = mongoose.Schema;
 
 const ItemInstanceSchema = new Schema({
   item: { type: Schema.Types.ObjectId, ref: "Item", required: true },
-  number_in_stock: { type: number, required: true },
-  sku: { type: String, required: true },
-  location: { type: Schema.Types.ObjectId, ref: "Location" }
+  sku: { type: String },
+  location: { type: Schema.Types.ObjectId, ref: "Location" },
+  stock_at_location: { type: Number, required: true },
 });
 
 ItemInstanceSchema.virtual("url").get(function () {

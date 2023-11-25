@@ -1,4 +1,4 @@
-const debug = require("debug")('app');
+const debug = require("debug")("app");
 var createError = require("http-errors");
 var express = require("express");
 var path = require("path");
@@ -15,6 +15,7 @@ mongoose.set("strictQuery", false);
 const dev_db_url = `mongodb+srv://${process.env.USER_NAME}:${process.env.PASSWORD}@${process.env.URL}/inventory?retryWrites=true&w=majority`;
 
 const mongoDB = process.env.MONGODB_URI || dev_db_url;
+console.log("123", mongoDB);
 
 main().catch((err) => debug(err));
 async function main() {
@@ -24,7 +25,7 @@ async function main() {
 
 var indexRouter = require("./routes/index");
 var usersRouter = require("./routes/users");
-const catalogRouter = require('./routes/catalog')
+const catalogRouter = require("./routes/catalog");
 
 var app = express();
 
@@ -40,7 +41,7 @@ app.use(express.static(path.join(__dirname, "public")));
 
 app.use("/", indexRouter);
 app.use("/users", usersRouter);
-app.use('/catalog', catalogRouter)
+app.use("/catalog", catalogRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
