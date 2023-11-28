@@ -28,5 +28,12 @@
         </ul>
       <% } %>
     </div>
+    <% if (admin) { %>
+      <div class="crud">
+        <a href='<%= item_detail._id %>/delete'>Delete item</a>
+        <br>
+        <a href='<%= item_detail._id %>/update'>Update item</a>
+      </div>
+    <% } %>
   </body>
 </html>

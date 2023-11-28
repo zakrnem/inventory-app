@@ -4,6 +4,7 @@ const Location = require('../models/location')
 const Category = require('../models/category')
 const { body, validationResult } = require("express-validator");
 const asyncHandler = require("express-async-handler");
+const admin = true
 
 exports.item_list = asyncHandler(async (req, res, next) => {
   const allItems = await Item.find({}, "name price");
@@ -39,5 +40,5 @@ exports.item_detail = asyncHandler(async (req, res, next) => {
   const itemDetails = await Item.findById(req.params.id).populate('category');
   const itemInstances = await ItemInstance.find({item: req.params.id}).populate('location').exec()
 
-  res.render("item_detail", { title: "Item detail", item_detail: itemDetails, item_instances: itemInstances });
+  res.render("item_detail", { title: "Item detail", item_detail: itemDetails, item_instances: itemInstances, admin: admin });
 });
