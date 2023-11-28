@@ -6,6 +6,13 @@
   </head>
   <body>
     <h1><%= title %></h1>
-    <p>Welcome to <%= title %></p>
+    <ul>
+      <% item_list.forEach((item) => { %>
+        <li class="list-item">
+          <a href="<%= item.url %>"><%= item.name %></a>
+          - Price: <%= item.price %>
+        </li>
+      <% }); %>
+    </ul>
   </body>
 </html>

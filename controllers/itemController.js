@@ -33,7 +33,7 @@ exports.item_delete_post = asyncHandler(async (req, res, next) => {
 });
 
 exports.item_detail = asyncHandler(async (req, res, next) => {
-    const itemDetails = await Item.findById(req.params.id).populate('category')
+  const itemDetails = await Item.findById(req.params.id);
 
-    res.render('item_detail', { title: 'Item detail', item_detail: itemDetails})
-})
+  res.render("item_detail", { title: "Item detail", item_detail: itemDetails });
+});
