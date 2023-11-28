@@ -33,5 +33,7 @@ exports.item_delete_post = asyncHandler(async (req, res, next) => {
 });
 
 exports.item_detail = asyncHandler(async (req, res, next) => {
-  res.send(`NOT IMPLEMENTED, Item detail ${req.params.id}`);
-});
+    const itemDetails = await Item.findById(req.params.id).populate('category')
+
+    res.render('item_detail', { title: 'Item detail', item_detail: itemDetails})
+})
