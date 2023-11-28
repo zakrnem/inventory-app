@@ -2,22 +2,31 @@
   <body>
     <h1><%= title %></h1>
     <div class="item-detail">
-      <strong><%= item_detail.name %></strong>
-      <p>Description: <%= item_detail.description %></p>
-      <p>Category: <%= item_detail.category.name %></p>
-      <p>Price: <%= item_detail.price %></p>
-      <p><%= item_detail.specifications %></p>
-    </div>
-    <div class="availability">
-      <h2>Availability at stores:</h2>
+      <h3><%= item_detail.name %></h3>
+      <h4>Description: </h4><%= item_detail.description %>
+      <h4>Category: </h4><%= item_detail.category.name %>
+      <h4>Price: </h4><%= item_detail.price %>
+      <h4>Specifications:</h4>
       <ul>
-        <% item_instances.forEach((instance) => { %>
-          <li class="list-instance">
-            <a href="<%= instance.location.url %>"><%= instance.location.name %></a>
-            - Stock at location: <%= instance.stock_at_location %>
+        <% item_detail.specifications.forEach((spec) => { %>
+          <li class="list-spec">
+           <%= spec %>
           </li>
         <% }); %>
       </ul>
+    </div>
+    <div class="availability">
+      <% if (item_instances.length !== 0) { %>
+        <h3>Availability at stores:</h3>
+        <ul>
+          <% item_instances.forEach((instance) => { %>
+            <li class="list-instance">
+              <a href="<%= instance.location.url %>"><%= instance.location.name %></a>
+              - Stock at location: <%= instance.stock_at_location %>
+            </li>
+          <% }); %>
+        </ul>
+      <% } %>
     </div>
   </body>
 </html>
