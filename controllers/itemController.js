@@ -1,6 +1,7 @@
 const Item = require("../models/item");
 const ItemInstance = require('../models/iteminstance')
 const Location = require('../models/location')
+const Category = require('../models/category')
 const { body, validationResult } = require("express-validator");
 const asyncHandler = require("express-async-handler");
 
@@ -35,7 +36,7 @@ exports.item_delete_post = asyncHandler(async (req, res, next) => {
 });
 
 exports.item_detail = asyncHandler(async (req, res, next) => {
-  const itemDetails = await Item.findById(req.params.id);
+  const itemDetails = await Item.findById(req.params.id).populate('category');
   const itemInstances = await ItemInstance.find({item: req.params.id}).populate('location').exec()
 
   res.render("item_detail", { title: "Item detail", item_detail: itemDetails, item_instances: itemInstances });
