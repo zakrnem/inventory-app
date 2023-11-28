@@ -1,10 +1,23 @@
 <%- include('./partials/head', {title: title}) %>
   <body>
     <h1><%= title %></h1>
-    <strong><%= item_detail.name %></strong>
-    <p>Description: <%= item_detail.description %></p>
-    <p>Category: <%= item_detail.category %></p>
-    <p>Price: <%= item_detail.price %></p>
-    <p><%= item_detail.specifications %></p>
+    <div class="item-detail">
+      <strong><%= item_detail.name %></strong>
+      <p>Description: <%= item_detail.description %></p>
+      <p>Category: <%= item_detail.category %></p>
+      <p>Price: <%= item_detail.price %></p>
+      <p><%= item_detail.specifications %></p>
+    </div>
+    <div class="availability">
+      <h2>Availability at stores:</h2>
+      <ul>
+        <% item_instances.forEach((instance) => { %>
+          <li class="list-instance">
+            <a href="<%= instance.location.url %>"><%= instance.location.name %></a>
+            - Stock at location: <%= instance.stock_at_location %>
+          </li>
+        <% }); %>
+      </ul>
+    </div>
   </body>
 </html>
