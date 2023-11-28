@@ -1,0 +1,15 @@
+<header>
+    <div class="nav_links">
+        <a href="/">Products</a>
+        <a href="">Categories</a>
+        <a href="">Locations</a>
+    </div>
+    <% if (admin) { %>
+        <div class="admin-crud">
+            <a href="catalog/item/create">Create new item</a>
+            <a href="catalog/iteminstance/create">Create new item instance</a>
+            <a href="catalog/location/create">Create new location</a>
+            <a href="catalog/category/create">Create new category</a>
+        </div>
+    <% } %>
+</header>

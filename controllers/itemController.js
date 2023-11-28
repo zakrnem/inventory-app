@@ -9,7 +9,7 @@ const admin = true
 exports.item_list = asyncHandler(async (req, res, next) => {
   const allItems = await Item.find({}, "name price");
 
-  res.render("item_list", { title: "Store", item_list: allItems });
+  res.render("item_list", { title: "Thinkpad Store", item_list: allItems, admin: admin });
 });
 
 exports.item_create_get = asyncHandler(async (req, res, next) => {
