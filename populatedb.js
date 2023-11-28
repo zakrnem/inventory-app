@@ -30,9 +30,9 @@ async function main() {
   await mongoose.connect(mongoDB);
   console.log("Debug: Should be connected?");
   await createLocations();
+  await createCategories();
   await createItems();
   await createItemInstances();
-  await createCategories();
   console.log("Debug: Closing mongoose");
   mongoose.connection.close();
 }
@@ -65,7 +65,7 @@ async function itemCreate(
 
   const item = new Item(itemsdetail);
 
-  await item.save();
+  await item.save();x
   items[index] = item;
   console.log(`Added items: ${name} ${price}`);
 }
