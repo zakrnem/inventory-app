@@ -39,7 +39,16 @@ exports.item_update_post = asyncHandler(async (req, res, next) => {
 });
 
 exports.item_delete_get = asyncHandler(async (req, res, next) => {
-  res.send("NOT IMPLEMENTED, Item delete GET");
+  const itemDetails = await Item.findById(req.params.id).populate("category");
+  const itemInstances = await ItemInstance.find({ item: req.params.id })
+    .populate("location")
+    .exec();
+
+  res.render("item_delete", {
+    title: "Delete product:",
+    item_detail: itemDetails,
+    item_instances: itemInstances,
+  });
 });
 
 exports.item_delete_post = asyncHandler(async (req, res, next) => {
