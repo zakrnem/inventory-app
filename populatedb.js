@@ -65,7 +65,7 @@ async function itemCreate(
 
   const item = new Item(itemsdetail);
 
-  await item.save();x
+  await item.save();
   items[index] = item;
   console.log(`Added items: ${name} ${price}`);
 }
