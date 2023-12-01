@@ -3,9 +3,14 @@ const specList = document.querySelector(".spec-list");
 
 specList.addEventListener("click", (e) => {
   e.preventDefault();
-  if (e.target.id === `add-spec${specCount}`) {
+  
+  if (e.target.id === "add-spec") {
+    const currSpecDivClassname = e.target.parentElement.className
+    const currCount = parseInt(currSpecDivClassname.replace('spec', ''))
+    specCount = (currCount === specCount) ? specCount : currCount
+
     const previousSpecDiv = document.querySelector(`.spec${specCount}`);
-    const previousAddSpecBtn = document.getElementById(`add-spec${specCount}`);
+    const previousAddSpecBtn = document.getElementById(`add-spec`);
     previousSpecDiv.removeChild(previousAddSpecBtn);
 
     ++specCount;
@@ -20,7 +25,7 @@ specList.addEventListener("click", (e) => {
 
     const insertSpec = document.createElement("button");
     insertSpec.textContent = "+Add specification";
-    insertSpec.id = `add-spec${specCount}`;
+    insertSpec.id = `add-spec`;
 
     specInput.append(input, insertSpec);
     specList.append(specInput);

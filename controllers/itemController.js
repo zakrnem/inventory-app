@@ -22,6 +22,7 @@ exports.item_create_get = asyncHandler(async (req, res, next) => {
   res.render("item_form", {
     title: "Create product",
     categories: allCategories,
+    item: false,
     admin: admin,
   });
 });
@@ -31,7 +32,15 @@ exports.item_create_post = asyncHandler(async (req, res, next) => {
 });
 
 exports.item_update_get = asyncHandler(async (req, res, next) => {
-  res.send("NOT IMPLEMENTED, Item update GET");
+  const allCategories = await Category.find({});
+  const item = await Item.findById(req.params.id).populate("category")
+
+  res.render("item_form", {
+    title: "Update product",
+    categories: allCategories,
+    item: item,
+    admin: admin,
+  })
 });
 
 exports.item_update_post = asyncHandler(async (req, res, next) => {

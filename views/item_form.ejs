@@ -5,17 +5,26 @@
         <form method="POST" action>
             <div class="form-group">
                 <label for="name">Title:</label>
-                <input id="name" type="text" placeholder="Name of the product" name="name" required="true" value>
+                <% if (item) { %>
+                    <input id="name" type="text" placeholder="Name of the product" name="name" required="true" value="<%= item.name %>">
+                <% } else { %>
+                    <input id="name" type="text" placeholder="Name of the product" name="name" required="true">
+                <% } %>
             </div>
             <div class="form-group">
                 <label for="description">Description:</label>
-                <input id="description" type="text" placeholder="Add a description" name="description" value>
+                <textarea id="description" placeholder="Add a description" name="description" rows="4" cols='50'><% if (item) { %><%= item.description %><% } %></textarea>
             </div>
             <div class="form-group">
                 <label for="category">Category:</label>
                 <div>
                     <% categories.forEach((category) => { %>
-                        <input type="radio" id="<%= category._id %>" name="categories" value="<%= category._id %>">
+                        <% if (item) { %>
+                            <input type="radio" id="<%= category._id %>" name="categories" value="<%= category._id %>"
+                            <%= (item.category.name === category.name) ? 'checked' : ''  %>>
+                        <% } else { %>
+                            <input type="radio" id="<%= category._id %>" name="categories" value="<%= category._id %>" %>>
+                        <% } %>
                         <label for="<%= category %>"><%= category.name %></label><br>
                     <% }); %>
                 </div>
@@ -23,16 +32,25 @@
             <div class="form-group">
                 <label for="specifications">Specifications:</label>
                 <div class="spec-list">
-                    <div class="spec1">
-                        <input id="spec1" type="text" placeholder="Specification #1" name="spec1" value>
-                        <button id="add-spec1">+Add specification</button>
-                    </div>
+                    <% let count=0 %>
+                    <% if (item) { %>
+                        <% item.specifications.forEach((spec) => { %>
+                            <% ++count%>
+                            <div class="spec<%= count %>">
+                                <input id=`spec<%= count %>` type="text" placeholder=`Specification #<%= count %>` name=`spec<%= count %>`
+                                value="<%= spec %>">
+                                <% if (count === item.specifications.length) { %>
+                                    <button id="add-spec">+Add specification</button>
+                                <% } %>
+                            </div>
+                        <% }) %>
+                    <% } %>
                 </div>
                 
             </div>
             <div class="form-group">
-                <label for="price">Price:</label>
-                <input id="price" type="number" placeholder="0.00" name="price" required="true" value>
+                <label for="price">Price: </label>
+                <input id="price" type="number" placeholder="0.00" name="price" required="true" value="<%= item.price %>">
             </div>
             <button type="submit">Submit</button>
         </form>
