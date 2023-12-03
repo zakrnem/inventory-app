@@ -20,10 +20,10 @@
                 <div>
                     <% categories.forEach((category) => { %>
                         <% if (item) { %>
-                            <input type="radio" id="<%= category._id %>" name="categories" value="<%= category._id %>"
+                            <input type="radio" id="<%= category._id %>" name="category" value="<%= category._id %>"
                             <%= (item.category.name === category.name) ? 'checked' : ''  %>>
                         <% } else { %>
-                            <input type="radio" id="<%= category._id %>" name="categories" value="<%= category._id %>" %>>
+                            <input type="radio" id="<%= category._id %>" name="category" value="<%= category._id %>" %>>
                         <% } %>
                         <label for="<%= category %>"><%= category.name %></label><br>
                     <% }); %>
@@ -36,14 +36,15 @@
                     <% if (item) { %>
                         <% item.specifications.forEach((spec) => { %>
                             <% ++count%>
-                            <div class="spec<%= count %>">
-                                <input id=`spec<%= count %>` type="text" placeholder=`Specification #<%= count %>` name=`spec<%= count %>`
-                                value="<%= spec %>">
-                                <% if (count === item.specifications.length) { %>
-                                    <button id="add-spec">+Add specification</button>
-                                <% } %>
-                            </div>
+                            <input id=`spec<%= count %>` type="text" placeholder=`Specification #<%= count %>` name=`specification`
+                            value="<%= spec %>">
+                            <% if (count === item.specifications.length) { %>
+                                <button id="add-spec">+Add specification</button>
+                            <% } %>
                         <% }) %>
+                    <% } else { %>
+                        <input id=`spec1` type="text" placeholder="Specification #1" name="specification">
+                        <button id="add-spec">+Add specification</button>
                     <% } %>
                 </div>
                 
