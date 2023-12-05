@@ -112,7 +112,7 @@ exports.item_update_post = [
   body("description").trim().escape(),
   body("category.*").escape(),
   body("specification.*").escape(),
-  body("price", "Price must not be empty.")
+  body("price", "Price can't be a negative number.")
     .exists()
     .isFloat({ min: 0, max: 30000 }),
 
@@ -128,6 +128,7 @@ exports.item_update_post = [
       category: req.body.category,
       specifications: req.body.specification,
       price: req.body.price,
+      _id: req.params.id, // This is required, or a new ID will be assigned!
     });
 
     if (!errors.isEmpty()) {
@@ -144,9 +145,9 @@ exports.item_update_post = [
       // Data from form is valid.
 
       // Save item.
-      await item.save();
+      const updatedItem = await Item.findByIdAndUpdate(req.params.id, item, {});
       // Redirect to new item record.
-      res.redirect(item.url);
+      res.redirect(updatedItem.url);
     }
   }),
 ];
