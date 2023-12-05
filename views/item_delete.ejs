@@ -10,6 +10,7 @@
                         Do you really want to delete this product?
                     </p>
                     <form method="POST">
+                        <input class="form-control" id="itemid" type="hidden" name="itemid" required="true" value="<%= item_detail._id %>">
                         <button id="delete-item" type="submit">Delete product</button>
                     </form>
                 <% } else { %>

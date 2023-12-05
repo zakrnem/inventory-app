@@ -165,7 +165,25 @@ exports.item_delete_get = asyncHandler(async (req, res, next) => {
 });
 
 exports.item_delete_post = asyncHandler(async (req, res, next) => {
-  res.send("NOT IMPLEMENTED, Item delete POST");
+  // Get details of item and all their instances (in parallel)
+  const [item, itemInstances] = await Promise.all([
+    Item.findById(req.params.id).exec(),
+    ItemInstance.find({ item: req.params.id }).exec(),
+  ]);
+
+  if (itemInstances.length > 0) {
+    // Item has instances. Render in same way as for GET route.
+    res.render("item_delete", {
+      title: "Delete Product",
+      item: item,
+      item_instances: itemInstances,
+    });
+    return;
+  } else {
+    // Item has no instances. Delete object and redirect to the list of items.
+    await Item.findByIdAndDelete(req.body.itemid);
+    res.redirect("/catalog");
+  }
 });
 
 exports.item_detail = asyncHandler(async (req, res, next) => {
