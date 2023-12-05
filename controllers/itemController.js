@@ -23,41 +23,35 @@ exports.item_create_get = asyncHandler(async (req, res, next) => {
     title: "Create product",
     categories: allCategories,
     item: false,
+    errors: [],
     admin: admin,
   });
 });
 
 exports.item_create_post = [
-// Convert the category to an array.
-(req, res, next) => {
-  if (!(req.body.category instanceof Array)) {
-    if (typeof req.body.category === "undefined") req.body.category = [];
-    else req.body.category = new Array(req.body.category);
-  }
-  next();
-},
-
-// Convert the specification to an array.
-(req, res, next) => {
-  if (!(req.body.specification instanceof Array)) {
-    if (typeof req.body.specification === "undefined") req.body.specification = [];
-    else req.body.specification = new Array(req.body.specification);
-  }
-  next();
-},
+  // Convert the specification to an array.
+  (req, res, next) => {
+    if (!(req.body.specification instanceof Array)) {
+      if (typeof req.body.specification === "undefined")
+        req.body.specification = [];
+      else req.body.specification = new Array(req.body.specification);
+    }
+    next();
+  },
 
   // Validate and sanitize fields.
   body("name", "Title must not be empty.").trim().isLength({ min: 1 }).escape(),
   body("description").trim().escape(),
   body("category.*").escape(),
   body("specification.*").escape(),
-  body("price", "Price must not be empty.")
+  body("price", "Price can't be a negative number.")
     .exists()
-    .isFloat({ min: 0, max: 30000 }),
+    .isFloat({ min: 0 }),
 
   asyncHandler(async (req, res, next) => {
     // Extract the validation errors from a request.
     const errors = validationResult(req);
+    const allCategories = await Category.find({});
 
     // Create Item object with escaped and trimmed data
     const item = new Item({
@@ -73,6 +67,8 @@ exports.item_create_post = [
       res.render("item_form", {
         title: "Create product",
         item: item,
+        categories: allCategories,
+        admin: admin,
         errors: errors.array(),
       });
       return;
@@ -95,13 +91,65 @@ exports.item_update_get = asyncHandler(async (req, res, next) => {
     title: "Update product",
     categories: allCategories,
     item: item,
+    errors: [],
     admin: admin,
   });
 });
 
-exports.item_update_post = asyncHandler(async (req, res, next) => {
-  res.send("NOT IMPLEMENTED, Item update POST");
-});
+exports.item_update_post = [
+  // Convert the specification to an array.
+  (req, res, next) => {
+    if (!(req.body.specification instanceof Array)) {
+      if (typeof req.body.specification === "undefined")
+        req.body.specification = [];
+      else req.body.specification = new Array(req.body.specification);
+    }
+    next();
+  },
+
+  // Validate and sanitize fields.
+  body("name", "Title must not be empty.").trim().isLength({ min: 1 }).escape(),
+  body("description").trim().escape(),
+  body("category.*").escape(),
+  body("specification.*").escape(),
+  body("price", "Price must not be empty.")
+    .exists()
+    .isFloat({ min: 0, max: 30000 }),
+
+  asyncHandler(async (req, res, next) => {
+    // Extract the validation errors from a request.
+    const errors = validationResult(req);
+    const allCategories = await Category.find({});
+
+    // Create Item object with escaped and trimmed data
+    const item = new Item({
+      name: req.body.name,
+      description: req.body.description,
+      category: req.body.category,
+      specifications: req.body.specification,
+      price: req.body.price,
+    });
+
+    if (!errors.isEmpty()) {
+      // There are errors. Render form again with sanitized values/errors messages.
+      res.render("item_form", {
+        title: "Update product",
+        item: item,
+        categories: allCategories,
+        admin: admin,
+        errors: errors.array(),
+      });
+      return;
+    } else {
+      // Data from form is valid.
+
+      // Save item.
+      await item.save();
+      // Redirect to new item record.
+      res.redirect(item.url);
+    }
+  }),
+];
 
 exports.item_delete_get = asyncHandler(async (req, res, next) => {
   const itemDetails = await Item.findById(req.params.id).populate("category");
