@@ -1,14 +1,15 @@
-let specCount = 1;
 const specList = document.querySelector(".spec-list");
+const specsArray = [...specList.children]
+let specCount = (specsArray.length > 2) ? specsArray.length-1 : 1 
 
 specList.addEventListener("click", (e) => {
   e.preventDefault();
 
   if (e.target.id === "add-spec") {
-    const prevAddSpecBtn = document.getElementById(`add-spec`);
+    const prevAddSpecBtn = document.getElementById("add-spec");
     specList.removeChild(prevAddSpecBtn);
 
-    ++specCount;
+    specCount++
     const input = document.createElement("input");
     input.id = `spec${specCount}`;
     input.type = "text";
