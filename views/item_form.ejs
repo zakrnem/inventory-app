@@ -21,29 +21,29 @@
                     <% categories.forEach((category) => { %>
                         <% if (item) { %>
                             <input type="radio" id="<%= category._id %>" name="category" value="<%= category._id %>"
-                            <%= (item.category.name === category.name) ? 'checked' : ''  %>>
+                            <%= (item.category && (item.category.name === category.name)) ? 'checked' : ''  %>
                         <% } else { %>
                             <input type="radio" id="<%= category._id %>" name="category" value="<%= category._id %>" %>>
                         <% } %>
                         <label for="<%= category %>"><%= category.name %></label><br>
-                    <% }); %>
+                    <% }) %>
                 </div>
             </div>
             <div class="form-group">
                 <label for="specifications">Specifications:</label>
                 <div class="spec-list">
                     <% let count=0 %>
-                    <% if (item) { %>
+                    <% if (item && item.specifications.length > 0) { %>
                         <% item.specifications.forEach((spec) => { %>
                             <% ++count%>
-                            <input id=`spec<%= count %>` type="text" placeholder=`Specification #<%= count %>` name=`specification`
+                            <input id='spec<%= count %>' type="text" placeholder='Specification #<%= count %>' name='specification'
                             value="<%= spec %>">
                             <% if (count === item.specifications.length) { %>
                                 <button id="add-spec">+Add specification</button>
                             <% } %>
                         <% }) %>
                     <% } else { %>
-                        <input id=`spec1` type="text" placeholder="Specification #1" name="specification">
+                        <input id='spec1' type="text" placeholder="Specification #1" name="specification">
                         <button id="add-spec">+Add specification</button>
                     <% } %>
                 </div>
@@ -55,6 +55,13 @@
             </div>
             <button type="submit">Submit</button>
         </form>
+        <% if (errors) { %>
+            <ul>
+                <% errors.forEach((error) => { %>
+                    <li><%= error.msg %></li>
+                <% }) %>
+            </ul>
+        <% } %>
         <script type="text/javascript" src="/javascripts/addSpec.js"></script>
     </body>
 </html>
