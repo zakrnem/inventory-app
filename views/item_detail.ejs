@@ -5,17 +5,23 @@
     <h1><%= title %></h1>
     <div class="item-detail">
       <h3><%= item_detail.name %></h3>
-      <h4>Description: </h4><%= item_detail.description %>
-      <h4>Category: </h4><%= item_detail.category.name %>
+      <% if(item_detail.description) { %>
+        <h4>Description: </h4><%= item_detail.description %>
+      <% } %>  
+      <% if(item_detail.category) { %>
+        <h4>Category: </h4><%= item_detail.category.name %>
+      <% } %>
       <h4>Price: </h4><%= item_detail.price %>
-      <h4>Specifications:</h4>
-      <ul>
-        <% item_detail.specifications.forEach((spec) => { %>
-          <li class="list-spec">
-           <%= spec %>
-          </li>
-        <% }); %>
-      </ul>
+      <% if(item_detail.specifications.length > 1) { %>
+        <h4>Specifications:</h4>
+        <ul>
+          <% item_detail.specifications.forEach((spec) => { %>
+            <li class="list-spec">
+            <%= spec %>
+            </li>
+          <% }); %>
+      <% } %>
+        </ul>
     </div>
     <div class="availability">
       <% if (item_instances.length !== 0) { %>
