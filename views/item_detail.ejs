@@ -12,7 +12,7 @@
         <h4>Category: </h4><%= item_detail.category.name %>
       <% } %>
       <h4>Price: </h4><%= item_detail.price %>
-      <% if(item_detail.specifications.length > 1) { %>
+      <% if(item_detail.specifications.length > 0) { %>
         <h4>Specifications:</h4>
         <ul>
           <% item_detail.specifications.forEach((spec) => { %>

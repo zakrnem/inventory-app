@@ -38,6 +38,7 @@ exports.item_create_post = [
       else req.body.specification = new Array(req.body.specification);
     }
     req.body.specification = req.body.specification.map(item => encodeURIComponent(item));
+    req.body.specification = req.body.specification.filter(item => item !== '')
     next();
   },
 
@@ -117,6 +118,7 @@ exports.item_update_post = [
       else req.body.specification = new Array(req.body.specification);
     }
     req.body.specification = req.body.specification.map(item => encodeURIComponent(item));
+    req.body.specification = req.body.specification.filter(item => item !== '')
     next();
   },
 
