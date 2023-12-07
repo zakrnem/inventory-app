@@ -181,6 +181,12 @@ exports.item_delete_get = asyncHandler(async (req, res, next) => {
     .populate("location")
     .exec();
 
+  itemDetails.name = decodeURIComponent(itemDetails.name)
+  if (itemDetails.description) itemDetails.description = decodeURIComponent(itemDetails.description)
+  if (itemDetails.specifications) itemDetails.specifications = itemDetails.specifications.map((spec) => decodeURIComponent(spec))
+
+  itemInstances.location = decodeURIComponent(itemInstances)
+
   res.render("item_delete", {
     title: "Delete product:",
     item_detail: itemDetails,
