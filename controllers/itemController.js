@@ -8,7 +8,7 @@ const admin = true;
 
 exports.item_list = asyncHandler(async (req, res, next) => {
   const allItems = await Item.find({});
-  allItems.forEach((item) => item.name = decodeURIComponent(item.name))
+  allItems.forEach((item) => (item.name = decodeURIComponent(item.name)));
 
   res.render("item_list", {
     title: "Thinkpad Store",
@@ -37,15 +37,19 @@ exports.item_create_post = [
         req.body.specification = [];
       else req.body.specification = new Array(req.body.specification);
     }
-    req.body.specification = req.body.specification.map(item => encodeURIComponent(item));
-    req.body.specification = req.body.specification.filter(item => item !== '')
+    req.body.specification = req.body.specification.map((item) =>
+      encodeURIComponent(item),
+    );
+    req.body.specification = req.body.specification.filter(
+      (item) => item !== "",
+    );
     next();
   },
 
   (req, res, next) => {
-    req.body.name = encodeURIComponent(req.body.name)
-    req.body.description = encodeURIComponent(req.body.description)
-    next()
+    req.body.name = encodeURIComponent(req.body.name);
+    req.body.description = encodeURIComponent(req.body.description);
+    next();
   },
 
   // Validate and sanitize fields.
@@ -96,9 +100,12 @@ exports.item_update_get = asyncHandler(async (req, res, next) => {
   const allCategories = await Category.find({});
   const item = await Item.findById(req.params.id).populate("category");
 
-  item.name = decodeURIComponent(item.name)
-  if (item.description) item.description = decodeURIComponent(item.description)
-  if (item.specifications) item.specifications = item.specifications.map((spec) => decodeURIComponent(spec))
+  item.name = decodeURIComponent(item.name);
+  if (item.description) item.description = decodeURIComponent(item.description);
+  if (item.specifications)
+    item.specifications = item.specifications.map((spec) =>
+      decodeURIComponent(spec),
+    );
 
   res.render("item_form", {
     title: "Update product",
@@ -117,15 +124,19 @@ exports.item_update_post = [
         req.body.specification = [];
       else req.body.specification = new Array(req.body.specification);
     }
-    req.body.specification = req.body.specification.map(item => encodeURIComponent(item));
-    req.body.specification = req.body.specification.filter(item => item !== '')
+    req.body.specification = req.body.specification.map((item) =>
+      encodeURIComponent(item),
+    );
+    req.body.specification = req.body.specification.filter(
+      (item) => item !== "",
+    );
     next();
   },
 
   (req, res, next) => {
-    req.body.name = encodeURIComponent(req.body.name)
-    req.body.description = encodeURIComponent(req.body.description)
-    next()
+    req.body.name = encodeURIComponent(req.body.name);
+    req.body.description = encodeURIComponent(req.body.description);
+    next();
   },
 
   // Validate and sanitize fields.
@@ -136,8 +147,6 @@ exports.item_update_post = [
   body("price", "Price can't be a negative number.")
     .exists()
     .isFloat({ min: 0, max: 30000 }),
-
-  
 
   asyncHandler(async (req, res, next) => {
     // Extract the validation errors from a request.
@@ -181,11 +190,15 @@ exports.item_delete_get = asyncHandler(async (req, res, next) => {
     .populate("location")
     .exec();
 
-  itemDetails.name = decodeURIComponent(itemDetails.name)
-  if (itemDetails.description) itemDetails.description = decodeURIComponent(itemDetails.description)
-  if (itemDetails.specifications) itemDetails.specifications = itemDetails.specifications.map((spec) => decodeURIComponent(spec))
+  itemDetails.name = decodeURIComponent(itemDetails.name);
+  if (itemDetails.description)
+    itemDetails.description = decodeURIComponent(itemDetails.description);
+  if (itemDetails.specifications)
+    itemDetails.specifications = itemDetails.specifications.map((spec) =>
+      decodeURIComponent(spec),
+    );
 
-  itemInstances.location = decodeURIComponent(itemInstances)
+  itemInstances.location = decodeURIComponent(itemInstances);
 
   res.render("item_delete", {
     title: "Delete product:",
@@ -222,9 +235,13 @@ exports.item_detail = asyncHandler(async (req, res, next) => {
     .populate("location")
     .exec();
 
-  itemDetails.name = decodeURIComponent(itemDetails.name)
-  if (itemDetails.description) itemDetails.description = decodeURIComponent(itemDetails.description)
-  if (itemDetails.specifications) itemDetails.specifications = itemDetails.specifications.map((spec) => decodeURIComponent(spec))
+  itemDetails.name = decodeURIComponent(itemDetails.name);
+  if (itemDetails.description)
+    itemDetails.description = decodeURIComponent(itemDetails.description);
+  if (itemDetails.specifications)
+    itemDetails.specifications = itemDetails.specifications.map((spec) =>
+      decodeURIComponent(spec),
+    );
 
   res.render("item_detail", {
     title: "Product detail",
