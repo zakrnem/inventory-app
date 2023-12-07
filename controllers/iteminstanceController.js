@@ -44,5 +44,14 @@ exports.iteminstance_delete_post = asyncHandler(async (req, res, next) => {
 });
 
 exports.iteminstance_detail = asyncHandler(async (req, res, next) => {
-  res.send("NOT IMPLEMENTED, Item instance detail GET");
-});
+  const iteminstanceDetails = await ItemInstance.findById(req.params.id).populate('item').populate("location");
+  
+  iteminstanceDetails.item.name = decodeURIComponent(iteminstanceDetails.item.name)
+  iteminstanceDetails.location.name = decodeURIComponent(iteminstanceDetails.location.name)
+
+  res.render('iteminstance_detail', 
+  { title: 'Product instance detail',
+  iteminstance_detail: iteminstanceDetails,
+  admin: admin,
+  })
+})
