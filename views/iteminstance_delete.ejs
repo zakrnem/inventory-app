@@ -1,0 +1,20 @@
+<%- include('./partials/head', {title: title}) %>
+    <body>
+        <div class="item-instance-delete">
+            <h2>
+                <%= title %>
+            </h2>
+            <div class="delete-message">
+                <h4>Title: </h4><%= item_instance.item.name %>
+                <h4>Id: </h4><%= item_instance._id %>
+                <h4>Location: </h4><%= item_instance.location.name %>
+                <p>Do you really want to delete this product instance?</p>
+                <form method="POST">
+                    <input class="form-control" id="iteminstanceid" type="hidden" name="iteminstanceid" required="true"
+                    value="<%= item_instance._id %>">
+                    <button id="delete-item" type="submit">Delete product</button>
+                </form>
+            </div>
+        </div>
+    </body>
+</html>

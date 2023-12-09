@@ -74,7 +74,8 @@ exports.item_create_post = [
     });
 
     item.name = decodeURIComponent(item.name);
-    if (item.description) item.description = decodeURIComponent(item.description);
+    if (item.description)
+      item.description = decodeURIComponent(item.description);
     if (item.specifications)
       item.specifications = item.specifications.map((spec) =>
         decodeURIComponent(spec),
@@ -169,7 +170,8 @@ exports.item_update_post = [
     });
 
     item.name = decodeURIComponent(item.name);
-    if (item.description) item.description = decodeURIComponent(item.description);
+    if (item.description)
+      item.description = decodeURIComponent(item.description);
     if (item.specifications)
       item.specifications = item.specifications.map((spec) =>
         decodeURIComponent(spec),

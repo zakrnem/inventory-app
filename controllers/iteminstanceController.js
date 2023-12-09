@@ -67,7 +67,6 @@ exports.iteminstance_create_post = [
       stock_at_location: req.body.stock_at_location,
     });
 
-    
     if (!errors.isEmpty()) {
       const allItems = await Item.find({});
       const allLocations = await Location.find({});
@@ -99,7 +98,7 @@ exports.iteminstance_create_post = [
 exports.iteminstance_update_get = asyncHandler(async (req, res, next) => {
   const allItems = await Item.find({});
   const allLocations = await Location.find({});
-  const itemInstance = await ItemInstance.findById(req.params.id)
+  const itemInstance = await ItemInstance.findById(req.params.id);
 
   allItems.forEach((item) => {
     item.name = decodeURIComponent(item.name);
@@ -144,7 +143,7 @@ exports.iteminstance_update_post = [
       stock_at_location: req.body.stock_at_location,
       _id: req.params.id, // This is required, or a new ID will be assigned!
     });
-    
+
     if (!errors.isEmpty()) {
       const allItems = await Item.find({});
       const allLocations = await Location.find({});
@@ -174,11 +173,22 @@ exports.iteminstance_update_post = [
 ];
 
 exports.iteminstance_delete_get = asyncHandler(async (req, res, next) => {
-  res.send("NOT IMPLEMENTED, Item instance delete GET");
+  const itemInstance = await ItemInstance.findById(req.params.id)
+    .populate("item")
+    .populate("location");
+
+  itemInstance.item.name = decodeURIComponent(itemInstance.item.name);
+  itemInstance.location.name = decodeURIComponent(itemInstance.location.name);
+
+  res.render("iteminstance_delete", {
+    title: "Delete product instance: ",
+    item_instance: itemInstance,
+  });
 });
 
 exports.iteminstance_delete_post = asyncHandler(async (req, res, next) => {
-  res.send("NOT IMPLEMENTED, Item instance delete POST");
+  await ItemInstance.findByIdAndDelete(req.body.iteminstanceid);
+  res.redirect("/catalog/iteminstances");
 });
 
 exports.iteminstance_detail = asyncHandler(async (req, res, next) => {
