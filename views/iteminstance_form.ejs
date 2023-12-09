@@ -10,7 +10,7 @@
                 <select id="item" type="select" placeholder="Select product" name="item" required="true">
                     <% item_list.forEach((item) => { %>
                         <% if (item_instance) { %>
-                            <option value="<%= item._id %>" <%= (item._id === item_instance.item._id) ? 'selected' : '' %>>
+                            <option value="<%= item._id %>" <%= (item._id.toString() === selected_item.toString()) ? 'selected' : '' %>>
                                 <%= item.name %>
                             </option>
                         <% } else { %>
@@ -22,7 +22,7 @@
             <div class="form-group">
                 <label for="sku">Sku: </label>
                 <% if (item_instance) { %>
-                    <input id="sku" type="text" placeholder="Insert a SKU code" name="sku" value="<%= item_instance.value %>">
+                    <input id="sku" type="text" placeholder="Insert a SKU code" name="sku" value="<%= item_instance.sku %>">
                 <% } else { %>
                     <input id="sku" type="text" placeholder="Insert a SKU code" name="sku">
                 <% } %>
@@ -31,7 +31,13 @@
                 <label for="location">Location: </label>
                 <select id="location" type="select" placeholder="Select location" name="location" required="true">
                     <% location_list.forEach((location) => { %>
-                        <option value="<%= location._id %>"><%= location.name %></option>
+                        <% if (item_instance) { %>
+                            <option value="<%= location._id %>" 
+                            <%= (location._id.toString() === item_instance.location.toString()) ? 'selected' : '' %>>
+                            <%= location.name %></option>
+                        <% } else { %>
+                            <option value="<%= location._id %>"><%= location.name %></option>
+                        <% } %>                       
                     <% }) %>
                 </select>
             </div>
@@ -46,5 +52,14 @@
             </div>
             <button type="submit">Submit</button>
         </form>
+        <div class="errors">
+            <% if (errors) { %>
+                <ul>
+                    <% errors.forEach((error) => { %>
+                        <li><%= error.msg %></li>
+                    <% }) %>
+                </ul>
+            <% } %>
+        </div>
     </body>
 </html>

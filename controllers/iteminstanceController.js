@@ -3,6 +3,7 @@ const Item = require("../models/item");
 const Location = require("../models/location");
 const { body, validationResult } = require("express-validator");
 const asyncHandler = require("express-async-handler");
+const decode = require("html-entities").decode;
 const admin = true;
 
 exports.iteminstance_list = asyncHandler(async (req, res, next) => {
@@ -22,14 +23,14 @@ exports.iteminstance_list = asyncHandler(async (req, res, next) => {
 });
 
 exports.iteminstance_create_get = asyncHandler(async (req, res, next) => {
-  const allItems = await Item.find({})
-  const allLocations = await Location.find({})
+  const allItems = await Item.find({});
+  const allLocations = await Location.find({});
   allItems.forEach((item) => {
-    item.name = decodeURIComponent(item.name)
-  })
+    item.name = decodeURIComponent(item.name);
+  });
   allLocations.forEach((location) => {
-    location.name = decodeURIComponent(location.name)
-  })
+    location.name = decodeURIComponent(location.name);
+  });
 
   res.render("iteminstance_form", {
     title: "Create product instance",
@@ -37,12 +38,62 @@ exports.iteminstance_create_get = asyncHandler(async (req, res, next) => {
     item_instance: false,
     location_list: allLocations,
     admin: admin,
-  })
+    errors: [],
+  });
 });
 
-exports.iteminstance_create_post = asyncHandler(async (req, res, next) => {
-  res.send("NOT IMPLEMENTED, Item instance create POST");
-});
+exports.iteminstance_create_post = [
+  // Validate and sanitize fields
+  body("item", "Product must be specified")
+    .trim()
+    .isLength({ min: 1 })
+    .escape(),
+  body("sku").trim().escape(),
+  body("location", "Location must be specified")
+    .trim()
+    .isLength({ min: 1 })
+    .escape(),
+  body("stock_at_location", "Stock must be a valid number")
+    .exists()
+    .isFloat({ min: 0 }),
+
+  // Process request
+  asyncHandler(async (req, res, next) => {
+    const errors = validationResult(req);
+    const itemInstance = new ItemInstance({
+      item: req.body.item,
+      sku: req.body.sku,
+      location: req.body.location,
+      stock_at_location: req.body.stock_at_location,
+    });
+
+    itemInstance.sku = decode(itemInstance.sku);
+    if (!errors.isEmpty()) {
+      const allItems = await Item.find({});
+      const allLocations = await Location.find({});
+
+      allItems.forEach((item) => {
+        item.name = decodeURIComponent(item.name);
+      });
+      allLocations.forEach((location) => {
+        location.name = decodeURIComponent(location.name);
+      });
+
+      res.render("iteminstance_form", {
+        title: "Create product instance",
+        item_list: allItems,
+        selected_item: itemInstance.item._id,
+        item_instance: itemInstance,
+        location_list: allLocations,
+        admin: admin,
+        errors: errors.array(),
+      });
+    } else {
+      await itemInstance.save();
+      res.redirect(itemInstance.url);
+    }
+  }),
+];
 
 exports.iteminstance_update_get = asyncHandler(async (req, res, next) => {
   res.send("NOT IMPLEMENTED, Item instance update GET");

@@ -5,8 +5,8 @@
     <h1><%= title %></h1>
     <div class="iteminstance-detail">
       <h3><%= iteminstance_detail.item.name %></h3>
-      <p><%= iteminstance_detail.location.name %></p>
-      <p><%= iteminstance_detail.stock_at_location %></p>
+      <h4>Location: </h4><%= iteminstance_detail.location.name %>
+      <h4>Stock at location: </h4><%= iteminstance_detail.stock_at_location %>
     </div>
     <% if (admin) { %>
       <div class="crud">

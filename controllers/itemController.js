@@ -57,9 +57,7 @@ exports.item_create_post = [
   body("description").trim().escape(),
   body("category.*").escape(),
   body("specification.*").escape(),
-  body("price", "Price can't be a negative number.")
-    .exists()
-    .isFloat({ min: 0 }),
+  body("price", "Price must be a valid number.").exists().isFloat({ min: 0 }),
 
   asyncHandler(async (req, res, next) => {
     // Extract the validation errors from a request.
