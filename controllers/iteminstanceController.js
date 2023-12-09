@@ -67,11 +67,12 @@ exports.iteminstance_create_post = [
       stock_at_location: req.body.stock_at_location,
     });
 
-    itemInstance.sku = decode(itemInstance.sku);
+    
     if (!errors.isEmpty()) {
       const allItems = await Item.find({});
       const allLocations = await Location.find({});
 
+      itemInstance.sku = decode(itemInstance.sku);
       allItems.forEach((item) => {
         item.name = decodeURIComponent(item.name);
       });
@@ -96,12 +97,81 @@ exports.iteminstance_create_post = [
 ];
 
 exports.iteminstance_update_get = asyncHandler(async (req, res, next) => {
-  res.send("NOT IMPLEMENTED, Item instance update GET");
+  const allItems = await Item.find({});
+  const allLocations = await Location.find({});
+  const itemInstance = await ItemInstance.findById(req.params.id)
+
+  allItems.forEach((item) => {
+    item.name = decodeURIComponent(item.name);
+  });
+  allLocations.forEach((location) => {
+    location.name = decodeURIComponent(location.name);
+  });
+
+  res.render("iteminstance_form", {
+    title: "Update product instance",
+    item_list: allItems,
+    selected_item: itemInstance.item._id,
+    item_instance: itemInstance,
+    location_list: allLocations,
+    admin: admin,
+    errors: [],
+  });
 });
 
-exports.iteminstance_update_post = asyncHandler(async (req, res, next) => {
-  res.send("NOT IMPLEMENTED, Item instance update POST");
-});
+exports.iteminstance_update_post = [
+  // Validate and sanitize fields
+  body("item", "Product must be specified")
+    .trim()
+    .isLength({ min: 1 })
+    .escape(),
+  body("sku").trim().escape(),
+  body("location", "Location must be specified")
+    .trim()
+    .isLength({ min: 1 })
+    .escape(),
+  body("stock_at_location", "Stock must be a valid number")
+    .exists()
+    .isFloat({ min: 0 }),
+
+  // Process request
+  asyncHandler(async (req, res, next) => {
+    const errors = validationResult(req);
+    const itemInstance = new ItemInstance({
+      item: req.body.item,
+      sku: req.body.sku,
+      location: req.body.location,
+      stock_at_location: req.body.stock_at_location,
+      _id: req.params.id, // This is required, or a new ID will be assigned!
+    });
+    
+    if (!errors.isEmpty()) {
+      const allItems = await Item.find({});
+      const allLocations = await Location.find({});
+
+      itemInstance.sku = decode(itemInstance.sku);
+      allItems.forEach((item) => {
+        item.name = decodeURIComponent(item.name);
+      });
+      allLocations.forEach((location) => {
+        location.name = decodeURIComponent(location.name);
+      });
+
+      res.render("iteminstance_form", {
+        title: "Update product instance",
+        item_list: allItems,
+        selected_item: itemInstance.item._id,
+        item_instance: itemInstance,
+        location_list: allLocations,
+        admin: admin,
+        errors: errors.array(),
+      });
+    } else {
+      await ItemInstance.findByIdAndUpdate(req.params.id, itemInstance, {});
+      res.redirect(itemInstance.url);
+    }
+  }),
+];
 
 exports.iteminstance_delete_get = asyncHandler(async (req, res, next) => {
   res.send("NOT IMPLEMENTED, Item instance delete GET");
