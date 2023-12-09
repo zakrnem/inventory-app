@@ -1,3 +1,4 @@
+const mongoose = require("mongoose");
 const ItemInstance = require("../models/iteminstance");
 const Item = require("../models/item");
 const Location = require("../models/location");
@@ -39,6 +40,7 @@ exports.iteminstance_create_get = asyncHandler(async (req, res, next) => {
     location_list: allLocations,
     admin: admin,
     errors: [],
+    existing_error: false,
   });
 });
 
@@ -59,7 +61,8 @@ exports.iteminstance_create_post = [
 
   // Process request
   asyncHandler(async (req, res, next) => {
-    const errors = validationResult(req);
+    const errors = validationResult(req)
+
     const itemInstance = new ItemInstance({
       item: req.body.item,
       sku: req.body.sku,
@@ -67,7 +70,12 @@ exports.iteminstance_create_post = [
       stock_at_location: req.body.stock_at_location,
     });
 
-    if (!errors.isEmpty()) {
+    const existingInstance = await ItemInstance.findOne({ 
+      "item": new mongoose.Types.ObjectId(req.body.item),
+      "location": new mongoose.Types.ObjectId(req.body.location)
+    })
+
+    if (!errors.isEmpty() || existingInstance !== null) {
       const allItems = await Item.find({});
       const allLocations = await Location.find({});
 
@@ -79,6 +87,8 @@ exports.iteminstance_create_post = [
         location.name = decodeURIComponent(location.name);
       });
 
+      const existingError = (existingInstance !== null)
+
       res.render("iteminstance_form", {
         title: "Create product instance",
         item_list: allItems,
@@ -87,6 +97,7 @@ exports.iteminstance_create_post = [
         location_list: allLocations,
         admin: admin,
         errors: errors.array(),
+        existing_error: existingError,
       });
     } else {
       await itemInstance.save();
@@ -115,6 +126,7 @@ exports.iteminstance_update_get = asyncHandler(async (req, res, next) => {
     location_list: allLocations,
     admin: admin,
     errors: [],
+    existing_error: false,
   });
 });
 
@@ -144,6 +156,12 @@ exports.iteminstance_update_post = [
       _id: req.params.id, // This is required, or a new ID will be assigned!
     });
 
+    //Not working
+    const existingInstance = await ItemInstance.findOne({ 
+      "item": new mongoose.Types.ObjectId(req.body.item),
+      "location": new mongoose.Types.ObjectId(req.body.location)
+    })
+
     if (!errors.isEmpty()) {
       const allItems = await Item.find({});
       const allLocations = await Location.find({});
@@ -156,6 +174,9 @@ exports.iteminstance_update_post = [
         location.name = decodeURIComponent(location.name);
       });
 
+      //Not working
+      const existingError = (existingInstance !== null)
+
       res.render("iteminstance_form", {
         title: "Update product instance",
         item_list: allItems,
@@ -164,6 +185,7 @@ exports.iteminstance_update_post = [
         location_list: allLocations,
         admin: admin,
         errors: errors.array(),
+        existing_error: existingError,
       });
     } else {
       await ItemInstance.findByIdAndUpdate(req.params.id, itemInstance, {});

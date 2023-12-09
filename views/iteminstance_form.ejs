@@ -53,13 +53,16 @@
             <button type="submit">Submit</button>
         </form>
         <div class="errors">
+            <ul>
             <% if (errors) { %>
-                <ul>
                     <% errors.forEach((error) => { %>
                         <li><%= error.msg %></li>
                     <% }) %>
-                </ul>
             <% } %>
+            <% if (existing_error) { %>
+                <li>An instance with the same product name and location already exists.</li>
+            <% } %>
+            </ul>
         </div>
     </body>
 </html>
