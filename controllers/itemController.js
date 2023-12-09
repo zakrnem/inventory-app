@@ -73,6 +73,13 @@ exports.item_create_post = [
       price: req.body.price,
     });
 
+    item.name = decodeURIComponent(item.name);
+    if (item.description) item.description = decodeURIComponent(item.description);
+    if (item.specifications)
+      item.specifications = item.specifications.map((spec) =>
+        decodeURIComponent(spec),
+      );
+
     if (!errors.isEmpty()) {
       // There are errors. Render form again with sanitized values/errors messages.
       res.render("item_form", {
@@ -160,6 +167,13 @@ exports.item_update_post = [
       price: req.body.price,
       _id: req.params.id, // This is required, or a new ID will be assigned!
     });
+
+    item.name = decodeURIComponent(item.name);
+    if (item.description) item.description = decodeURIComponent(item.description);
+    if (item.specifications)
+      item.specifications = item.specifications.map((spec) =>
+        decodeURIComponent(spec),
+      );
 
     if (!errors.isEmpty()) {
       // There are errors. Render form again with sanitized values/errors messages.
