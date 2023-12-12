@@ -61,7 +61,7 @@ exports.iteminstance_create_post = [
 
   // Process request
   asyncHandler(async (req, res, next) => {
-    const errors = validationResult(req)
+    const errors = validationResult(req);
 
     const itemInstance = new ItemInstance({
       item: req.body.item,
@@ -70,12 +70,13 @@ exports.iteminstance_create_post = [
       stock_at_location: req.body.stock_at_location,
     });
 
-    const existingInstance = await ItemInstance.findOne({ 
-      "item": new mongoose.Types.ObjectId(req.body.item),
-      "location": new mongoose.Types.ObjectId(req.body.location)
-    })
+    const existingInstance = await ItemInstance.findOne({
+      item: new mongoose.Types.ObjectId(req.body.item),
+      location: new mongoose.Types.ObjectId(req.body.location),
+    });
+    const existingError = existingInstance !== null;
 
-    if (!errors.isEmpty() || existingInstance !== null) {
+    if (!errors.isEmpty() || existingError) {
       const allItems = await Item.find({});
       const allLocations = await Location.find({});
 
@@ -86,8 +87,6 @@ exports.iteminstance_create_post = [
       allLocations.forEach((location) => {
         location.name = decodeURIComponent(location.name);
       });
-
-      const existingError = (existingInstance !== null)
 
       res.render("iteminstance_form", {
         title: "Create product instance",
@@ -153,16 +152,20 @@ exports.iteminstance_update_post = [
       sku: req.body.sku,
       location: req.body.location,
       stock_at_location: req.body.stock_at_location,
-      _id: req.params.id, // This is required, or a new ID will be assigned!
+      _id: req.params.id,
     });
 
-    //Not working
-    const existingInstance = await ItemInstance.findOne({ 
-      "item": new mongoose.Types.ObjectId(req.body.item),
-      "location": new mongoose.Types.ObjectId(req.body.location)
-    })
+    // Prevent instance duplication
+    const existingInstance = await ItemInstance.find({
+      item: new mongoose.Types.ObjectId(req.body.item),
+      location: new mongoose.Types.ObjectId(req.body.location),
+    });
+    const prevValue = await ItemInstance.findById(req.params.id);
+    const editPrevInstance = (prevValue.item.toString() === req.body.item
+    && prevValue.location.toString() === req.body.location)
+    const existingError = existingInstance.length > 0
 
-    if (!errors.isEmpty()) {
+    if (!errors.isEmpty() || (existingError && !editPrevInstance)) {
       const allItems = await Item.find({});
       const allLocations = await Location.find({});
 
@@ -173,9 +176,6 @@ exports.iteminstance_update_post = [
       allLocations.forEach((location) => {
         location.name = decodeURIComponent(location.name);
       });
-
-      //Not working
-      const existingError = (existingInstance !== null)
 
       res.render("iteminstance_form", {
         title: "Update product instance",
