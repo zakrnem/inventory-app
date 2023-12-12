@@ -57,15 +57,56 @@ exports.category_create_post = [
   })
 ]
 
-
-
 exports.category_update_get = asyncHandler(async (req, res, next) => {
-  res.send("NOT IMPLEMENTED, Category update GET");
+  const category = await Category.findById(req.params.id)
+  
+  res.render("category_form", {
+    title: "Update category",
+    category: category,
+    errors: [],
+    admin: admin,
+  })
 });
 
-exports.category_update_post = asyncHandler(async (req, res, next) => {
-  res.send("NOT IMPLEMENTED, Category update POST");
-});
+exports.category_update_post = [
+    body("name", "Title must not be empty.").trim().isLength({ min: 1 }).escape(),
+  
+    (req, res, next) => {
+      req.body.name = encodeURIComponent(req.body.name);
+      next();
+    },
+  
+    asyncHandler(async (req, res, next) => {
+      const errors = validationResult(req);
+      const category = new Category({ 
+        name: req.body.name,
+        _id: req.params.id,
+      });
+  
+      const existingCategory = await Category.findOne({
+        name: req.body.name,
+      });
+      const existingError = existingCategory !== null;
+  
+      // Prevent instance duplication
+    const prevValue = await Category.findById(req.params.id);
+    const editPrevInstance = prevValue.name.toString() === req.body.name
+
+      if (!errors.isEmpty() || (existingError && !editPrevInstance)) {
+        res.render("category_form", {
+          title: "Update category",
+          category: category,
+          errors: errors.array(),
+          existing_error: existingError,
+          admin: admin,
+        });
+        return;
+      } else {
+        await Category.findByIdAndUpdate(req.params.id, category, {})
+        res.redirect(category.url);
+      }
+    })
+]
 
 exports.category_delete_get = asyncHandler(async (req, res, next) => {
   res.send("NOT IMPLEMENTED, Category delete GET");

@@ -18,6 +18,9 @@
                     <% }) %>
                 </ul>
             <% } %>
+            <% if (existing_error) { %>
+                <li>A category with the same name already exists.</li>
+            <% } %>
         </div>
     </body>
 </html>
