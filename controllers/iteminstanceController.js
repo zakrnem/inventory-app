@@ -161,9 +161,10 @@ exports.iteminstance_update_post = [
       location: new mongoose.Types.ObjectId(req.body.location),
     });
     const prevValue = await ItemInstance.findById(req.params.id);
-    const editPrevInstance = (prevValue.item.toString() === req.body.item
-    && prevValue.location.toString() === req.body.location)
-    const existingError = existingInstance.length > 0
+    const editPrevInstance =
+      prevValue.item.toString() === req.body.item &&
+      prevValue.location.toString() === req.body.location;
+    const existingError = existingInstance.length > 0;
 
     if (!errors.isEmpty() || (existingError && !editPrevInstance)) {
       const allItems = await Item.find({});
