@@ -4,7 +4,7 @@
     <h1><%= title %><%= category.name %></h1>
     <div class="category-detail">
         <h2>Products: </h2>
-        <div class="product-list">
+        <div class="item-list">
             <ul>
                 <% item_list.forEach((item) => { %>
                     <h3><a href="<%= item.url %>"><%= item.name %></a></h3>
@@ -14,5 +14,12 @@
             </ul>
         </div>
     </div>
+    <% if (admin) { %>
+        <div class="crud">
+          <a href='<%= category._id %>/delete'>Delete category</a>
+          <br>
+          <a href='<%= category._id %>/update'>Update category</a>
+        </div>
+    <% } %>
 </body>
 </html>
