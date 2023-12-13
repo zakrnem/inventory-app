@@ -3,16 +3,20 @@
   <body>
     <h1><%= title %><%= category.name %></h1>
     <div class="category-detail">
-        <h2>Products: </h2>
-        <div class="item-list">
-            <ul>
+        <% if (item_list.length > 0) { %>
+            <h2>Products: </h2>
+            <div class="item-list">
                 <% item_list.forEach((item) => { %>
                     <h3><a href="<%= item.url %>"><%= item.name %></a></h3>
                     <p><%= item.description %></p>
                     <br>
                 <% }) %>
-            </ul>
-        </div>
+            </div>
+        <% } else { %>
+            <div>
+                <p>There are no products on this category</p>
+            </div>
+        <% } %>
     </div>
     <% if (admin) { %>
         <div class="crud">

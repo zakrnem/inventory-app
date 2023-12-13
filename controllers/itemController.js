@@ -218,6 +218,7 @@ exports.item_delete_get = asyncHandler(async (req, res, next) => {
     title: "Delete product:",
     item_detail: itemDetails,
     item_instances: itemInstances,
+    admin: admin,
   });
 });
 
@@ -234,6 +235,7 @@ exports.item_delete_post = asyncHandler(async (req, res, next) => {
       title: "Delete Product",
       item: item,
       item_instances: itemInstances,
+      admin: admin,
     });
     return;
   } else {

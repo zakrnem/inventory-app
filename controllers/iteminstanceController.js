@@ -206,6 +206,7 @@ exports.iteminstance_delete_get = asyncHandler(async (req, res, next) => {
   res.render("iteminstance_delete", {
     title: "Delete product instance: ",
     item_instance: itemInstance,
+    admin: admin,
   });
 });
 
