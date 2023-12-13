@@ -21,6 +21,7 @@ exports.category_create_get = asyncHandler(async (req, res, next) => {
     title: "Create category",
     category: false,
     errors: [],
+    existing_error: false,
     admin: admin,
   })
 });
@@ -64,6 +65,7 @@ exports.category_update_get = asyncHandler(async (req, res, next) => {
     title: "Update category",
     category: category,
     errors: [],
+    existing_error: false,
     admin: admin,
   })
 });
@@ -109,11 +111,40 @@ exports.category_update_post = [
 ]
 
 exports.category_delete_get = asyncHandler(async (req, res, next) => {
-  res.send("NOT IMPLEMENTED, Category delete GET");
+  const category = await Category.findById(req.params.id).exec()
+  const itemList = await Item.find({ category: req.params.id }).exec();
+  category.name = decodeURIComponent(category.name)
+  itemList.forEach((item) => {
+    item.name = decodeURIComponent(item.name)
+    item.description = decodeURIComponent(item.description)
+  })
+
+  res.render("category_delete", {
+    title: "Delete category: ",
+    category: category,
+    item_list: itemList,
+    admin: admin,
+  })
 });
 
 exports.category_delete_post = asyncHandler(async (req, res, next) => {
-  res.send("NOT IMPLEMENTED, Category delete POST");
+  const [category, itemList] = await Promise.all([
+    Category.findById(req.params.id).exec(),
+    ItemInstance.find({ item: req.params.id }).exec(),
+  ]);
+
+  if (itemList.length > 0) {
+    res.render("item_delete", {
+      title: "Delete category: ",
+      category: category,
+      item_list: itemList,
+      admin: admin,
+    });
+    return;
+  } else {
+    await Category.findByIdAndDelete(req.body.categoryid);
+    res.redirect("/catalog/categories");
+  }
 });
 
 exports.category_detail = asyncHandler(async (req, res, next) => {
