@@ -1,0 +1,26 @@
+<%- include('./partials/head', {title: title}) %>
+<%- include('./partials/header', {admin: admin}) %>
+    <body>
+        <h1><%= title %></h1>
+        <form method="POST" action>
+            <div class="form-group">
+                <label for="name">Name:</label>
+                <input id="name" type="text" placeholder="Name of the location" name="name" required="true" 
+                value="<%= (location) ? location.name : '' %>">
+            </div>
+            <button type="submit">Submit</button>
+        </form>
+        <div class="errors">
+            <% if (errors) { %>
+                <ul>
+                    <% errors.forEach((error) => { %>
+                        <li><%= error.msg %></li>
+                    <% }) %>
+                </ul>
+            <% } %>
+            <% if (existing_error) { %>
+                <li>A location with the same name already exists.</li>
+            <% } %>
+        </div>
+    </body>
+</html>

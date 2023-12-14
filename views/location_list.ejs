@@ -1,0 +1,13 @@
+<%- include('./partials/head', {title: title}) %>
+<%- include('./partials/header', {admin: admin}) %>
+  <body>
+    <h1><%= title %></h1>
+    <ul>
+      <% location_list.forEach((location) => { %>
+        <li class="list-location">
+          <a href="<%= location.url %>"><%= location.name %></a>
+        </li>
+      <% }); %>
+    </ul>
+  </body>
+</html>

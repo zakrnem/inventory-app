@@ -4,6 +4,7 @@ const router = express.Router();
 const item_controller = require("../controllers/itemController");
 const iteminstance_controller = require("../controllers/iteminstanceController");
 const category_controller = require("../controllers/categoryController");
+const location_controller = require("../controllers/locationController")
 
 // ITEM ROUTES
 
@@ -76,5 +77,23 @@ router.get("/category/:id/update", category_controller.category_update_get);
 router.post("/category/:id/update", category_controller.category_update_post);
 
 router.get("/category/:id", category_controller.category_detail);
+
+// LOCATION ROUTES
+
+router.get("/locations", location_controller.location_list);
+
+router.get("/location/create", location_controller.location_create_get);
+
+router.post("/location/create", location_controller.location_create_post);
+
+router.get("/location/:id/delete", location_controller.location_delete_get);
+
+router.post("/location/:id/delete", location_controller.location_delete_post);
+
+router.get("/location/:id/update", location_controller.location_update_get);
+
+router.post("/location/:id/update", location_controller.location_update_post);
+
+router.get("/location/:id", location_controller.location_detail);
 
 module.exports = router;
