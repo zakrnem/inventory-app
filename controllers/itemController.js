@@ -4,6 +4,7 @@ const Location = require("../models/location");
 const Category = require("../models/category");
 const { body, validationResult } = require("express-validator");
 const asyncHandler = require("express-async-handler");
+const decode = require("html-entities").decode;
 const admin = true;
 
 exports.item_list = asyncHandler(async (req, res, next) => {
@@ -19,19 +20,21 @@ exports.item_list = asyncHandler(async (req, res, next) => {
 
 exports.item_create_get = asyncHandler(async (req, res, next) => {
   const allCategories = await Category.find({});
-  allCategories.forEach((category) => (category.name = decodeURIComponent(category.name)))
+  allCategories.forEach(
+    (category) => (category.name = decode(decodeURIComponent(category.name))),
+  );
 
   res.render("item_form", {
     title: "Create product",
     categories: allCategories,
     item: false,
     errors: [],
+    existing_error: false,
     admin: admin,
   });
 });
 
 exports.item_create_post = [
-  // Convert the specification to an array.
   (req, res, next) => {
     if (!(req.body.specification instanceof Array)) {
       if (typeof req.body.specification === "undefined")
@@ -64,6 +67,9 @@ exports.item_create_post = [
     // Extract the validation errors from a request.
     const errors = validationResult(req);
     const allCategories = await Category.find({});
+    allCategories.forEach(
+      (category) => (category.name = decode(decodeURIComponent(category.name))),
+    );
 
     // Create Item object with escaped and trimmed data
     const item = new Item({
@@ -74,15 +80,20 @@ exports.item_create_post = [
       price: req.body.price,
     });
 
-    item.name = decodeURIComponent(item.name);
+    item.name = decode(decodeURIComponent(item.name));
     if (item.description)
-      item.description = decodeURIComponent(item.description);
+      item.description = decode(decodeURIComponent(item.description));
     if (item.specifications)
       item.specifications = item.specifications.map((spec) =>
-        decodeURIComponent(spec),
+        decode(decodeURIComponent(spec)),
       );
 
-    if (!errors.isEmpty()) {
+    const existingInstance = await Item.findOne({
+      name: decode(decodeURIComponent(req.body.name)),
+    });
+    const existingError = existingInstance !== null;
+
+    if (!errors.isEmpty() || existingError) {
       // There are errors. Render form again with sanitized values/errors messages.
       res.render("item_form", {
         title: "Create product",
@@ -90,6 +101,7 @@ exports.item_create_post = [
         categories: allCategories,
         admin: admin,
         errors: errors.array(),
+        existing_error: existingError,
       });
       return;
     } else {
@@ -109,18 +121,22 @@ exports.item_update_get = asyncHandler(async (req, res, next) => {
     Item.findById(req.params.id).populate("category"),
   ]);
 
-  item.name = decodeURIComponent(item.name);
-  if (item.description) item.description = decodeURIComponent(item.description);
+  item.name = decode(decodeURIComponent(item.name));
+  if (item.description) item.description = decode(decodeURIComponent(item.description));
   if (item.specifications)
     item.specifications = item.specifications.map((spec) =>
-      decodeURIComponent(spec),
+      decode(decodeURIComponent(spec)),
     );
+  allCategories.forEach(
+    (category) => (category.name = decode(decodeURIComponent(category.name))),
+  );
 
   res.render("item_form", {
     title: "Update product",
     categories: allCategories,
     item: item,
     errors: [],
+    existing_error: false,
     admin: admin,
   });
 });
@@ -161,41 +177,44 @@ exports.item_update_post = [
     // Extract the validation errors from a request.
     const errors = validationResult(req);
     const allCategories = await Category.find({});
+    allCategories.forEach((category) => (category.name = decode(decodeURIComponent(category.name))));
 
     // Create Item object with escaped and trimmed data
+    const itemCategory = await Category.findById(req.body.category);
+    const itemName = decode(decodeURIComponent(req.body.name));
     const item = new Item({
-      name: req.body.name,
+      name: itemName,
       description: req.body.description,
-      category: req.body.category,
+      category: itemCategory,
       specifications: req.body.specification,
       price: req.body.price,
       _id: req.params.id, // This is required, or a new ID will be assigned!
     });
 
-    item.name = decodeURIComponent(item.name);
     if (item.description)
-      item.description = decodeURIComponent(item.description);
+      item.description = decode(decodeURIComponent(item.description));
     if (item.specifications)
       item.specifications = item.specifications.map((spec) =>
-        decodeURIComponent(spec),
+        decode(decodeURIComponent(spec)),
       );
 
-    if (!errors.isEmpty()) {
-      // There are errors. Render form again with sanitized values/errors messages.
+    const existingItem = await Item.find({ name: itemName });
+    const prevValue = await Item.findById(req.params.id);
+    const editPrevItem = prevValue.name === itemName;
+    const existingError = existingItem.length > 0 && !editPrevItem;
+
+    if (!errors.isEmpty() || existingError) {
       res.render("item_form", {
         title: "Update product",
         item: item,
         categories: allCategories,
         admin: admin,
         errors: errors.array(),
+        existing_error: existingError,
       });
       return;
     } else {
-      // Data from form is valid.
-
-      // Save item.
       const updatedItem = await Item.findByIdAndUpdate(req.params.id, item, {});
-      // Redirect to new item record.
       res.redirect(updatedItem.url);
     }
   }),
@@ -207,15 +226,15 @@ exports.item_delete_get = asyncHandler(async (req, res, next) => {
     ItemInstance.find({ item: req.params.id }).populate("location").exec(),
   ]);
 
-  itemDetails.name = decodeURIComponent(itemDetails.name);
+  itemDetails.name = decode(decodeURIComponent(itemDetails.name));
   if (itemDetails.description)
-    itemDetails.description = decodeURIComponent(itemDetails.description);
+    itemDetails.description = decode(decodeURIComponent(itemDetails.description));
   if (itemDetails.specifications)
     itemDetails.specifications = itemDetails.specifications.map((spec) =>
-      decodeURIComponent(spec),
-    );
+      decode(decodeURIComponent(spec),
+    ));
 
-  itemInstances.location = decodeURIComponent(itemInstances);
+  itemInstances.location = decode(decodeURIComponent(itemInstances));
 
   res.render("item_delete", {
     title: "Delete product:",
@@ -254,13 +273,20 @@ exports.item_detail = asyncHandler(async (req, res, next) => {
     ItemInstance.find({ item: req.params.id }).populate("location").exec(),
   ]);
 
-  itemDetails.name = decodeURIComponent(itemDetails.name);
+  itemDetails.name = decode(decodeURIComponent(itemDetails.name));
   if (itemDetails.description)
-    itemDetails.description = decodeURIComponent(itemDetails.description);
+    itemDetails.description = decode(decodeURIComponent(itemDetails.description));
   if (itemDetails.specifications)
     itemDetails.specifications = itemDetails.specifications.map((spec) =>
-      decodeURIComponent(spec),
+      decode(decodeURIComponent(spec)),
     );
+  if (itemDetails.category) {
+    itemDetails.category.name = decode(
+      decodeURIComponent(itemDetails.category.name),
+    )};
+  itemInstances.forEach((instance) => {
+    instance.location.name = decode(decodeURIComponent(instance.location.name))
+  })
 
   res.render("item_detail", {
     title: "Product detail",

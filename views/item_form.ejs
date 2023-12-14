@@ -63,6 +63,9 @@
                     <% }) %>
                 </ul>
             <% } %>
+            <% if (existing_error) { %>
+                <li>A product with the same name already exists.</li>
+            <% } %>
         </div>
         <script type="text/javascript" src="/javascripts/addSpec.js"></script>
     </body>
