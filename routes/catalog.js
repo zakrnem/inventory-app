@@ -4,7 +4,7 @@ const router = express.Router();
 const item_controller = require("../controllers/itemController");
 const iteminstance_controller = require("../controllers/iteminstanceController");
 const category_controller = require("../controllers/categoryController");
-const location_controller = require("../controllers/locationController")
+const location_controller = require("../controllers/locationController");
 
 // ITEM ROUTES
 

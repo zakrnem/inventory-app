@@ -4,7 +4,7 @@
     <h1><%= title %><%= location.name %></h1>
     <div class="location-detail">
         <% if (item_instance_list.length > 0) { %>
-            <h2>Products: </h2>
+            <h2>Product instances: </h2>
             <div class="item-instance-list">
                 <% item_instance_list.forEach((itemInstance) => { %>
                     <h3><a href="<%= itemInstance.url %>"><%= itemInstance.item.name %></a></h3>

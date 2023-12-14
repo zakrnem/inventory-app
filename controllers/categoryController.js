@@ -11,8 +11,8 @@ const admin = true;
 exports.category_list = asyncHandler(async (req, res, next) => {
   const allCategories = await Category.find({}, "name");
   allCategories.forEach((category) => {
-    category.name = decode(decodeURIComponent(category.name))
-  })
+    category.name = decode(decodeURIComponent(category.name));
+  });
   res.render("category_list", {
     title: "Categories list",
     category_list: allCategories,
@@ -65,7 +65,7 @@ exports.category_create_post = [
 
 exports.category_update_get = asyncHandler(async (req, res, next) => {
   const category = await Category.findById(req.params.id);
-  category.name = decode(decodeURIComponent(category.name))
+  category.name = decode(decodeURIComponent(category.name));
 
   res.render("category_form", {
     title: "Update category",
@@ -161,8 +161,8 @@ exports.category_detail = asyncHandler(async (req, res, next) => {
     Category.findById(req.params.id).exec(),
     Item.find({ category: req.params.id }).exec(),
   ]);
-  category.name = decodeURIComponent(category.name)
-  category.name = decode(category.name)
+  category.name = decodeURIComponent(category.name);
+  category.name = decode(category.name);
   itemList.forEach((item) => {
     item.name = decodeURIComponent(item.name);
     item.description = decodeURIComponent(item.description);

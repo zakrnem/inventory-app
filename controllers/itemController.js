@@ -19,6 +19,7 @@ exports.item_list = asyncHandler(async (req, res, next) => {
 
 exports.item_create_get = asyncHandler(async (req, res, next) => {
   const allCategories = await Category.find({});
+  allCategories.forEach((category) => (category.name = decodeURIComponent(category.name)))
 
   res.render("item_form", {
     title: "Create product",
@@ -103,8 +104,10 @@ exports.item_create_post = [
 ];
 
 exports.item_update_get = asyncHandler(async (req, res, next) => {
-  const allCategories = await Category.find({});
-  const item = await Item.findById(req.params.id).populate("category");
+  const [allCategories, item] = await Promise.all([
+    Category.find({}),
+    Item.findById(req.params.id).populate("category"),
+  ]);
 
   item.name = decodeURIComponent(item.name);
   if (item.description) item.description = decodeURIComponent(item.description);
@@ -199,10 +202,10 @@ exports.item_update_post = [
 ];
 
 exports.item_delete_get = asyncHandler(async (req, res, next) => {
-  const itemDetails = await Item.findById(req.params.id).populate("category");
-  const itemInstances = await ItemInstance.find({ item: req.params.id })
-    .populate("location")
-    .exec();
+  const [itemDetails, itemInstances] = await Promise.all([
+    Item.findById(req.params.id).populate("category"),
+    ItemInstance.find({ item: req.params.id }).populate("location").exec(),
+  ]);
 
   itemDetails.name = decodeURIComponent(itemDetails.name);
   if (itemDetails.description)
@@ -246,10 +249,10 @@ exports.item_delete_post = asyncHandler(async (req, res, next) => {
 });
 
 exports.item_detail = asyncHandler(async (req, res, next) => {
-  const itemDetails = await Item.findById(req.params.id).populate("category");
-  const itemInstances = await ItemInstance.find({ item: req.params.id })
-    .populate("location")
-    .exec();
+  const [itemDetails, itemInstances] = await Promise.all([
+    Item.findById(req.params.id).populate("category"),
+    ItemInstance.find({ item: req.params.id }).populate("location").exec(),
+  ]);
 
   itemDetails.name = decodeURIComponent(itemDetails.name);
   if (itemDetails.description)

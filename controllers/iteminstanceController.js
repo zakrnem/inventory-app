@@ -24,8 +24,10 @@ exports.iteminstance_list = asyncHandler(async (req, res, next) => {
 });
 
 exports.iteminstance_create_get = asyncHandler(async (req, res, next) => {
-  const allItems = await Item.find({});
-  const allLocations = await Location.find({});
+  const [allItems, allLocations] = await Promise.all([
+    Item.find({}),
+    Location.find({}),
+  ]);
   allItems.forEach((item) => {
     item.name = decodeURIComponent(item.name);
   });
@@ -77,8 +79,10 @@ exports.iteminstance_create_post = [
     const existingError = existingInstance !== null;
 
     if (!errors.isEmpty() || existingError) {
-      const allItems = await Item.find({});
-      const allLocations = await Location.find({});
+      const [allItems, allLocations] = await Promise.all([
+        Item.find({}),
+        Location.find({}),
+      ]);
 
       itemInstance.sku = decode(itemInstance.sku);
       allItems.forEach((item) => {
@@ -106,9 +110,11 @@ exports.iteminstance_create_post = [
 ];
 
 exports.iteminstance_update_get = asyncHandler(async (req, res, next) => {
-  const allItems = await Item.find({});
-  const allLocations = await Location.find({});
-  const itemInstance = await ItemInstance.findById(req.params.id);
+  const [allItems, allLocations, itemInstance] = await Promise.all([
+    Item.find({}),
+    Location.find({}),
+    ItemInstance.findById(req.params.id),
+  ]);
 
   allItems.forEach((item) => {
     item.name = decodeURIComponent(item.name);
@@ -167,8 +173,10 @@ exports.iteminstance_update_post = [
     const existingError = existingInstance.length > 0;
 
     if (!errors.isEmpty() || (existingError && !editPrevInstance)) {
-      const allItems = await Item.find({});
-      const allLocations = await Location.find({});
+      const [allItems, allLocations] = await Promise.all([
+        Item.find({}),
+        Location.find({}),
+      ]);
 
       itemInstance.sku = decode(itemInstance.sku);
       allItems.forEach((item) => {

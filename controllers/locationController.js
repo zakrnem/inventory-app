@@ -11,8 +11,8 @@ const admin = true;
 exports.location_list = asyncHandler(async (req, res, next) => {
   const allLocations = await Location.find({}, "name");
   allLocations.forEach((location) => {
-    location.name = decode(decodeURIComponent(location.name))
-  })
+    location.name = decode(decodeURIComponent(location.name));
+  });
   res.render("location_list", {
     title: "Locations list",
     location_list: allLocations,
@@ -65,7 +65,7 @@ exports.location_create_post = [
 
 exports.location_update_get = asyncHandler(async (req, res, next) => {
   const category = await Location.findById(req.params.id);
-  category.name = decode(decodeURIComponent(category.name))
+  category.name = decode(decodeURIComponent(category.name));
 
   res.render("category_form", {
     title: "Update category",
@@ -123,8 +123,8 @@ exports.location_delete_get = asyncHandler(async (req, res, next) => {
     ItemInstance.find({ location: req.params.id }).populate("item").exec(),
   ]);
   location.name = decodeURIComponent(location.name);
-  console.log('itemInstanceList')
-  console.log(itemInstanceList)
+  console.log("itemInstanceList");
+  console.log(itemInstanceList);
   itemInstanceList.forEach((itemInstance) => {
     itemInstance.name = decodeURIComponent(itemInstance.name);
     itemInstance.description = decodeURIComponent(itemInstance.description);
@@ -161,10 +161,13 @@ exports.location_delete_post = asyncHandler(async (req, res, next) => {
 exports.location_detail = asyncHandler(async (req, res, next) => {
   const [location, itemInstanceList] = await Promise.all([
     Location.findById(req.params.id).exec(),
-    ItemInstance.find({ location: req.params.id }).populate("item").populate("stock_at_location").exec(),
+    ItemInstance.find({ location: req.params.id })
+      .populate("item")
+      .populate("stock_at_location")
+      .exec(),
   ]);
-  location.name = decodeURIComponent(location.name)
-  location.name = decode(location.name)
+  location.name = decodeURIComponent(location.name);
+  location.name = decode(location.name);
   itemInstanceList.forEach((itemInstance) => {
     itemInstance.name = decodeURIComponent(itemInstance.name);
     itemInstance.description = decodeURIComponent(itemInstance.description);
