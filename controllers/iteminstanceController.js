@@ -12,12 +12,12 @@ exports.iteminstance_list = asyncHandler(async (req, res, next) => {
     .populate("item")
     .populate("location");
   allIteminstances.forEach((instance) => {
-    instance.item.name = decodeURIComponent(instance.item.name);
-    instance.location.name = decodeURIComponent(instance.location.name);
+    instance.item.name = decode(decodeURIComponent(instance.item.name))
+    instance.location.name = decode(decodeURIComponent(instance.location.name))
   });
 
   res.render("iteminstance_list", {
-    title: "Product Instance List",
+    title: "Product instance list",
     iteminstance_list: allIteminstances,
     admin: admin,
   });
@@ -29,10 +29,10 @@ exports.iteminstance_create_get = asyncHandler(async (req, res, next) => {
     Location.find({}),
   ]);
   allItems.forEach((item) => {
-    item.name = decodeURIComponent(item.name);
+    item.name = decode(decodeURIComponent(item.name));
   });
   allLocations.forEach((location) => {
-    location.name = decodeURIComponent(location.name);
+    location.name = decode(decodeURIComponent(location.name));
   });
 
   res.render("iteminstance_form", {
@@ -47,7 +47,6 @@ exports.iteminstance_create_get = asyncHandler(async (req, res, next) => {
 });
 
 exports.iteminstance_create_post = [
-  // Validate and sanitize fields
   body("item", "Product must be specified")
     .trim()
     .isLength({ min: 1 })
@@ -61,9 +60,9 @@ exports.iteminstance_create_post = [
     .exists()
     .isFloat({ min: 0 }),
 
-  // Process request
   asyncHandler(async (req, res, next) => {
     const errors = validationResult(req);
+    req.body.sku = encodeURIComponent(req.body.sku)
 
     const itemInstance = new ItemInstance({
       item: req.body.item,
@@ -84,12 +83,12 @@ exports.iteminstance_create_post = [
         Location.find({}),
       ]);
 
-      itemInstance.sku = decode(itemInstance.sku);
+      itemInstance.sku = decode(decodeURIComponent(itemInstance.sku));
       allItems.forEach((item) => {
-        item.name = decodeURIComponent(item.name);
+        item.name = decode(decodeURIComponent(item.name));
       });
       allLocations.forEach((location) => {
-        location.name = decodeURIComponent(location.name);
+        location.name = decode(decodeURIComponent(location.name));
       });
 
       res.render("iteminstance_form", {
@@ -117,11 +116,12 @@ exports.iteminstance_update_get = asyncHandler(async (req, res, next) => {
   ]);
 
   allItems.forEach((item) => {
-    item.name = decodeURIComponent(item.name);
+    item.name = decode(decodeURIComponent(item.name));
   });
   allLocations.forEach((location) => {
-    location.name = decodeURIComponent(location.name);
+    location.name = decode(decodeURIComponent(location.name));
   });
+  itemInstance.sku = decode(decodeURIComponent(itemInstance.sku))
 
   res.render("iteminstance_form", {
     title: "Update product instance",
@@ -136,7 +136,6 @@ exports.iteminstance_update_get = asyncHandler(async (req, res, next) => {
 });
 
 exports.iteminstance_update_post = [
-  // Validate and sanitize fields
   body("item", "Product must be specified")
     .trim()
     .isLength({ min: 1 })
@@ -150,7 +149,6 @@ exports.iteminstance_update_post = [
     .exists()
     .isFloat({ min: 0 }),
 
-  // Process request
   asyncHandler(async (req, res, next) => {
     const errors = validationResult(req);
     const itemInstance = new ItemInstance({
@@ -161,7 +159,6 @@ exports.iteminstance_update_post = [
       _id: req.params.id,
     });
 
-    // Prevent instance duplication
     const existingInstance = await ItemInstance.find({
       item: new mongoose.Types.ObjectId(req.body.item),
       location: new mongoose.Types.ObjectId(req.body.location),
@@ -170,9 +167,9 @@ exports.iteminstance_update_post = [
     const editPrevInstance =
       prevValue.item.toString() === req.body.item &&
       prevValue.location.toString() === req.body.location;
-    const existingError = existingInstance.length > 0;
+    const existingError = existingInstance.length > 0 && !editPrevInstance;
 
-    if (!errors.isEmpty() || (existingError && !editPrevInstance)) {
+    if (!errors.isEmpty() || existingError) {
       const [allItems, allLocations] = await Promise.all([
         Item.find({}),
         Location.find({}),
@@ -180,10 +177,10 @@ exports.iteminstance_update_post = [
 
       itemInstance.sku = decode(itemInstance.sku);
       allItems.forEach((item) => {
-        item.name = decodeURIComponent(item.name);
+        item.name = decode(decodeURIComponent(item.name));
       });
       allLocations.forEach((location) => {
-        location.name = decodeURIComponent(location.name);
+        location.name = decode(decodeURIComponent(location.name));
       });
 
       res.render("iteminstance_form", {
@@ -208,8 +205,8 @@ exports.iteminstance_delete_get = asyncHandler(async (req, res, next) => {
     .populate("item")
     .populate("location");
 
-  itemInstance.item.name = decodeURIComponent(itemInstance.item.name);
-  itemInstance.location.name = decodeURIComponent(itemInstance.location.name);
+  itemInstance.item.name = decode(decodeURIComponent(itemInstance.item.name));
+  itemInstance.location.name = decode(decodeURIComponent(itemInstance.location.name));
 
   res.render("iteminstance_delete", {
     title: "Delete product instance: ",
@@ -228,15 +225,16 @@ exports.iteminstance_detail = asyncHandler(async (req, res, next) => {
     .populate("item")
     .populate("location");
 
-  iteminstanceDetails.item.name = decodeURIComponent(
+  iteminstanceDetails.item.name = decode(decodeURIComponent(
     iteminstanceDetails.item.name,
-  );
-  iteminstanceDetails.location.name = decodeURIComponent(
+  ));
+  iteminstanceDetails.location.name = decode(decodeURIComponent(
     iteminstanceDetails.location.name,
-  );
+  ));
+  iteminstanceDetails.sku = decode(decodeURIComponent(iteminstanceDetails.sku))
 
   res.render("iteminstance_detail", {
-    title: "Product instance detail",
+    title: "Id: ",
     iteminstance_detail: iteminstanceDetails,
     admin: admin,
   });
