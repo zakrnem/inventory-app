@@ -48,6 +48,7 @@ exports.location_create_post = [
     const existingError = existingLocation !== null;
 
     if (!errors.isEmpty() || existingError) {
+      location.name = decode(decodeURIComponent(location.name))
       res.render("location_form", {
         title: "Create location",
         location: location,
@@ -64,12 +65,12 @@ exports.location_create_post = [
 ];
 
 exports.location_update_get = asyncHandler(async (req, res, next) => {
-  const category = await Location.findById(req.params.id);
-  category.name = decode(decodeURIComponent(category.name));
+  const location = await Location.findById(req.params.id);
+  location.name = decode(decodeURIComponent(location.name));
 
-  res.render("category_form", {
-    title: "Update category",
-    category: category,
+  res.render("location_form", {
+    title: "Update location",
+    location: location,
     errors: [],
     existing_error: false,
     admin: admin,
@@ -79,29 +80,24 @@ exports.location_update_get = asyncHandler(async (req, res, next) => {
 exports.location_update_post = [
   body("name", "Title must not be empty.").trim().isLength({ min: 1 }).escape(),
 
-  (req, res, next) => {
-    req.body.name = encodeURIComponent(req.body.name);
-    next();
-  },
-
   asyncHandler(async (req, res, next) => {
     const errors = validationResult(req);
+    req.body.name = encodeURIComponent(req.body.name);
     const location = new Location({
       name: req.body.name,
       _id: req.params.id,
     });
 
-    // Prevent instance duplication
     const [existingLocation, prevValue] = await Promise.all([
       Location.findOne({
         name: req.body.name,
       }),
       Location.findById(req.params.id),
     ]);
-    const existingError = existingLocation !== null;
     const editPrevInstance = prevValue.name.toString() === req.body.name;
+    const existingError = existingLocation !== null && !editPrevInstance;
 
-    if (!errors.isEmpty() || (existingError && !editPrevInstance)) {
+    if (!errors.isEmpty() || existingError) {
       res.render("location_form", {
         title: "Update location",
         location: location,
@@ -122,12 +118,10 @@ exports.location_delete_get = asyncHandler(async (req, res, next) => {
     Location.findById(req.params.id).exec(),
     ItemInstance.find({ location: req.params.id }).populate("item").exec(),
   ]);
-  location.name = decodeURIComponent(location.name);
-  console.log("itemInstanceList");
-  console.log(itemInstanceList);
+  location.name = decode(decodeURIComponent(location.name));
   itemInstanceList.forEach((itemInstance) => {
-    itemInstance.name = decodeURIComponent(itemInstance.name);
-    itemInstance.description = decodeURIComponent(itemInstance.description);
+    itemInstance.name = decode(decodeURIComponent(itemInstance.name));
+    itemInstance.description = decode(decodeURIComponent(itemInstance.description));
   });
 
   res.render("location_delete", {
@@ -139,7 +133,7 @@ exports.location_delete_get = asyncHandler(async (req, res, next) => {
 });
 
 exports.location_delete_post = asyncHandler(async (req, res, next) => {
-  const [location, itemList] = await Promise.all([
+  const [location, itemInstanceList] = await Promise.all([
     Location.findById(req.params.id).exec(),
     ItemInstance.find({ location: req.params.id }).populate("item").exec(),
   ]);
@@ -166,11 +160,10 @@ exports.location_detail = asyncHandler(async (req, res, next) => {
       .populate("stock_at_location")
       .exec(),
   ]);
-  location.name = decodeURIComponent(location.name);
-  location.name = decode(location.name);
+  location.name = decode(decodeURIComponent(location.name));
   itemInstanceList.forEach((itemInstance) => {
-    itemInstance.name = decodeURIComponent(itemInstance.name);
-    itemInstance.description = decodeURIComponent(itemInstance.description);
+    itemInstance.name = decode(decodeURIComponent(itemInstance.name))
+    itemInstance.description = decode(decodeURIComponent(itemInstance.description))
   });
 
   res.render("location_detail", {
