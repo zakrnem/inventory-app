@@ -6,7 +6,7 @@
                 <%= title %> <%= category.name %>
             </h1>
             <div class="delete-message">
-                <% if (item_list.length === 0) { %>
+                <% if (item_instance_list.length === 0) { %>
                     <p>
                         Do you really want to delete this category?
                     </p>
@@ -18,12 +18,12 @@
                     <p>
                         Please delete the following products before attempting to delete this category.
                     </p>
-                    <div class="item-items">
+                    <div class="instance-list">
                         <h2>Products:</h2>
-                            <% item_list.forEach((item) => { %>
-                                <div class="item-details">
-                                    <h3><a href="<%= item.url %>"><%= item.name %></a></h3>
-                                    <p><%= item.description %></p>
+                            <% item_instance_list.forEach((instance) => { %>
+                                <div class="instance-details">
+                                    <h3><a href="<%= instance.url %>"><%= instance.name %></a></h3>
+                                    <p><%= instance.description %></p>
                                     <hr>
                                 </div>
                             <% }); %>

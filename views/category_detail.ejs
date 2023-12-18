@@ -3,12 +3,12 @@
   <body>
     <h1><%= title %><%= category.name %></h1>
     <div class="category-detail">
-        <% if (item_list.length > 0) { %>
+        <% if (item_instance_list.length > 0) { %>
             <h2>Products: </h2>
-            <div class="item-list">
-                <% item_list.forEach((item) => { %>
-                    <h3><a href="<%= item.url %>"><%= item.name %></a></h3>
-                    <p><%= item.description %></p>
+            <div class="instance-list">
+                <% item_instance_list.forEach((instance) => { %>
+                    <h3><a href="<%= instance.url %>"><%= instance.name %></a></h3>
+                    <p><%= instance.description %></p>
                     <br>
                 <% }) %>
             </div>
