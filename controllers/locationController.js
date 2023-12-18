@@ -1,4 +1,3 @@
-const Category = require("../models/category");
 const Item = require("../models/item");
 const ItemInstance = require("../models/iteminstance");
 const Location = require("../models/location");
@@ -6,7 +5,7 @@ const { body, validationResult } = require("express-validator");
 const asyncHandler = require("express-async-handler");
 const mongoose = require("mongoose");
 const decode = require("html-entities").decode;
-const admin = true;
+const admin = require("../app").admin;
 
 exports.location_list = asyncHandler(async (req, res, next) => {
   const allLocations = await Location.find({}, "name");
@@ -16,7 +15,7 @@ exports.location_list = asyncHandler(async (req, res, next) => {
   res.render("location_list", {
     title: "Locations list",
     location_list: allLocations,
-    admin: admin,
+    admin: req.app.locals.admin,
   });
 });
 
@@ -26,7 +25,7 @@ exports.location_create_get = asyncHandler(async (req, res, next) => {
     location: false,
     errors: [],
     existing_error: false,
-    admin: admin,
+    admin: req.app.locals.admin,
   });
 });
 
@@ -48,13 +47,13 @@ exports.location_create_post = [
     const existingError = existingLocation !== null;
 
     if (!errors.isEmpty() || existingError) {
-      location.name = decode(decodeURIComponent(location.name))
+      location.name = decode(decodeURIComponent(location.name));
       res.render("location_form", {
         title: "Create location",
         location: location,
         errors: errors.array(),
         existing_error: existingError,
-        admin: admin,
+        admin: req.app.locals.admin,
       });
       return;
     } else {
@@ -73,7 +72,7 @@ exports.location_update_get = asyncHandler(async (req, res, next) => {
     location: location,
     errors: [],
     existing_error: false,
-    admin: admin,
+    admin: req.app.locals.admin,
   });
 });
 
@@ -103,7 +102,7 @@ exports.location_update_post = [
         location: location,
         errors: errors.array(),
         existing_error: existingError,
-        admin: admin,
+        admin: req.app.locals.admin,
       });
       return;
     } else {
@@ -121,14 +120,16 @@ exports.location_delete_get = asyncHandler(async (req, res, next) => {
   location.name = decode(decodeURIComponent(location.name));
   itemInstanceList.forEach((itemInstance) => {
     itemInstance.name = decode(decodeURIComponent(itemInstance.name));
-    itemInstance.description = decode(decodeURIComponent(itemInstance.description));
+    itemInstance.description = decode(
+      decodeURIComponent(itemInstance.description),
+    );
   });
 
   res.render("location_delete", {
     title: "Delete location: ",
     location: location,
     item_instance_list: itemInstanceList,
-    admin: admin,
+    admin: req.app.locals.admin,
   });
 });
 
@@ -143,7 +144,7 @@ exports.location_delete_post = asyncHandler(async (req, res, next) => {
       title: "Delete location: ",
       location: location,
       item_instance_list: itemInstanceList,
-      admin: admin,
+      admin: req.app.locals.admin,
     });
     return;
   } else {
@@ -162,14 +163,16 @@ exports.location_detail = asyncHandler(async (req, res, next) => {
   ]);
   location.name = decode(decodeURIComponent(location.name));
   itemInstanceList.forEach((itemInstance) => {
-    itemInstance.name = decode(decodeURIComponent(itemInstance.name))
-    itemInstance.description = decode(decodeURIComponent(itemInstance.description))
+    itemInstance.name = decode(decodeURIComponent(itemInstance.name));
+    itemInstance.description = decode(
+      decodeURIComponent(itemInstance.description),
+    );
   });
 
   res.render("location_detail", {
     title: "Location: ",
     location: location,
     item_instance_list: itemInstanceList,
-    admin: admin,
+    admin: req.app.locals.admin,
   });
 });

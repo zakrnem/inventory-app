@@ -5,7 +5,6 @@ const Category = require("../models/category");
 const { body, validationResult } = require("express-validator");
 const asyncHandler = require("express-async-handler");
 const decode = require("html-entities").decode;
-const admin = true;
 
 exports.item_list = asyncHandler(async (req, res, next) => {
   const allItems = await Item.find({});
@@ -14,7 +13,7 @@ exports.item_list = asyncHandler(async (req, res, next) => {
   res.render("item_list", {
     title: "Thinkpad Store",
     item_list: allItems,
-    admin: admin,
+    admin: req.app.locals.admin,
   });
 });
 
@@ -30,7 +29,7 @@ exports.item_create_get = asyncHandler(async (req, res, next) => {
     item_detail: false,
     errors: [],
     existing_error: false,
-    admin: admin,
+    admin: req.app.locals.admin,
   });
 });
 
@@ -93,7 +92,7 @@ exports.item_create_post = [
         title: "Create product",
         item_detail: item,
         categories: allCategories,
-        admin: admin,
+        admin: req.app.locals.admin,
         errors: errors.array(),
         existing_error: existingError,
       });
@@ -130,7 +129,7 @@ exports.item_update_get = asyncHandler(async (req, res, next) => {
     item_detail: itemDetails,
     errors: [],
     existing_error: false,
-    admin: admin,
+    admin: req.app.locals.admin,
   });
 });
 
@@ -194,7 +193,7 @@ exports.item_update_post = [
         title: "Update product",
         item_detail: item,
         categories: allCategories,
-        admin: admin,
+        admin: req.app.locals.admin,
         errors: errors.array(),
         existing_error: existingError,
       });
@@ -227,7 +226,7 @@ exports.item_delete_get = asyncHandler(async (req, res, next) => {
     title: "Delete product:",
     item_detail: itemDetails,
     item_instances: itemInstances,
-    admin: admin,
+    admin: req.app.locals.admin,
   });
 });
 
@@ -250,10 +249,10 @@ exports.item_delete_post = asyncHandler(async (req, res, next) => {
     itemInstances.location = decode(decodeURIComponent(itemInstances));
 
     res.render("item_delete", {
-      title: "Delete Product",
+      title: "Delete product",
       item_detail: itemDetails,
       item_instances: itemInstances,
-      admin: admin,
+      admin: req.app.locals.admin,
     });
     return;
   } else {
@@ -290,6 +289,6 @@ exports.item_detail = asyncHandler(async (req, res, next) => {
     title: "Product detail",
     item_detail: itemDetails,
     item_instances: itemInstances,
-    admin: admin,
+    admin: req.app.locals.admin,
   });
 });

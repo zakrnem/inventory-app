@@ -5,21 +5,20 @@ const Location = require("../models/location");
 const { body, validationResult } = require("express-validator");
 const asyncHandler = require("express-async-handler");
 const decode = require("html-entities").decode;
-const admin = true;
 
 exports.iteminstance_list = asyncHandler(async (req, res, next) => {
   const allIteminstances = await ItemInstance.find({})
     .populate("item")
     .populate("location");
   allIteminstances.forEach((instance) => {
-    instance.item.name = decode(decodeURIComponent(instance.item.name))
-    instance.location.name = decode(decodeURIComponent(instance.location.name))
+    instance.item.name = decode(decodeURIComponent(instance.item.name));
+    instance.location.name = decode(decodeURIComponent(instance.location.name));
   });
 
   res.render("iteminstance_list", {
     title: "Product instance list",
     iteminstance_list: allIteminstances,
-    admin: admin,
+    admin: req.app.locals.admin,
   });
 });
 
@@ -40,7 +39,7 @@ exports.iteminstance_create_get = asyncHandler(async (req, res, next) => {
     item_list: allItems,
     item_instance: false,
     location_list: allLocations,
-    admin: admin,
+    admin: req.app.locals.admin,
     errors: [],
     existing_error: false,
   });
@@ -62,7 +61,7 @@ exports.iteminstance_create_post = [
 
   asyncHandler(async (req, res, next) => {
     const errors = validationResult(req);
-    req.body.sku = encodeURIComponent(req.body.sku)
+    req.body.sku = encodeURIComponent(req.body.sku);
 
     const itemInstance = new ItemInstance({
       item: req.body.item,
@@ -97,7 +96,7 @@ exports.iteminstance_create_post = [
         selected_item: itemInstance.item._id,
         item_instance: itemInstance,
         location_list: allLocations,
-        admin: admin,
+        admin: req.app.locals.admin,
         errors: errors.array(),
         existing_error: existingError,
       });
@@ -121,7 +120,7 @@ exports.iteminstance_update_get = asyncHandler(async (req, res, next) => {
   allLocations.forEach((location) => {
     location.name = decode(decodeURIComponent(location.name));
   });
-  itemInstance.sku = decode(decodeURIComponent(itemInstance.sku))
+  itemInstance.sku = decode(decodeURIComponent(itemInstance.sku));
 
   res.render("iteminstance_form", {
     title: "Update product instance",
@@ -129,7 +128,7 @@ exports.iteminstance_update_get = asyncHandler(async (req, res, next) => {
     selected_item: itemInstance.item._id,
     item_instance: itemInstance,
     location_list: allLocations,
-    admin: admin,
+    admin: req.app.locals.admin,
     errors: [],
     existing_error: false,
   });
@@ -189,7 +188,7 @@ exports.iteminstance_update_post = [
         selected_item: itemInstance.item._id,
         item_instance: itemInstance,
         location_list: allLocations,
-        admin: admin,
+        admin: req.app.locals.admin,
         errors: errors.array(),
         existing_error: existingError,
       });
@@ -206,12 +205,14 @@ exports.iteminstance_delete_get = asyncHandler(async (req, res, next) => {
     .populate("location");
 
   itemInstance.item.name = decode(decodeURIComponent(itemInstance.item.name));
-  itemInstance.location.name = decode(decodeURIComponent(itemInstance.location.name));
+  itemInstance.location.name = decode(
+    decodeURIComponent(itemInstance.location.name),
+  );
 
   res.render("iteminstance_delete", {
     title: "Delete product instance: ",
     item_instance: itemInstance,
-    admin: admin,
+    admin: req.app.locals.admin,
   });
 });
 
@@ -225,17 +226,17 @@ exports.iteminstance_detail = asyncHandler(async (req, res, next) => {
     .populate("item")
     .populate("location");
 
-  iteminstanceDetails.item.name = decode(decodeURIComponent(
-    iteminstanceDetails.item.name,
-  ));
-  iteminstanceDetails.location.name = decode(decodeURIComponent(
-    iteminstanceDetails.location.name,
-  ));
-  iteminstanceDetails.sku = decode(decodeURIComponent(iteminstanceDetails.sku))
+  iteminstanceDetails.item.name = decode(
+    decodeURIComponent(iteminstanceDetails.item.name),
+  );
+  iteminstanceDetails.location.name = decode(
+    decodeURIComponent(iteminstanceDetails.location.name),
+  );
+  iteminstanceDetails.sku = decode(decodeURIComponent(iteminstanceDetails.sku));
 
   res.render("iteminstance_detail", {
     title: "Id: ",
     iteminstance_detail: iteminstanceDetails,
-    admin: admin,
+    admin: req.app.locals.admin,
   });
 });

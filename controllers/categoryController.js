@@ -5,7 +5,6 @@ const { body, validationResult } = require("express-validator");
 const asyncHandler = require("express-async-handler");
 const mongoose = require("mongoose");
 const decode = require("html-entities").decode;
-const admin = true;
 
 exports.category_list = asyncHandler(async (req, res, next) => {
   const allCategories = await Category.find({}, "name");
@@ -15,7 +14,7 @@ exports.category_list = asyncHandler(async (req, res, next) => {
   res.render("category_list", {
     title: "Categories list",
     category_list: allCategories,
-    admin: admin,
+    admin: req.app.locals.admin,
   });
 });
 
@@ -25,7 +24,7 @@ exports.category_create_get = asyncHandler(async (req, res, next) => {
     category: false,
     errors: [],
     existing_error: false,
-    admin: admin,
+    admin: req.app.locals.admin,
   });
 });
 
@@ -47,7 +46,7 @@ exports.category_create_post = [
         category: category,
         errors: errors.array(),
         existing_error: existingError,
-        admin: admin,
+        admin: req.app.locals.admin,
       });
       return;
     } else {
@@ -66,7 +65,7 @@ exports.category_update_get = asyncHandler(async (req, res, next) => {
     category: category,
     errors: [],
     existing_error: false,
-    admin: admin,
+    admin: req.app.locals.admin,
   });
 });
 
@@ -96,7 +95,7 @@ exports.category_update_post = [
         category: category,
         errors: errors.array(),
         existing_error: existingError,
-        admin: admin,
+        admin: req.app.locals.admin,
       });
       return;
     } else {
@@ -121,7 +120,7 @@ exports.category_delete_get = asyncHandler(async (req, res, next) => {
     title: "Delete category: ",
     category: category,
     item_instance_list: itemInstanceList,
-    admin: admin,
+    admin: req.app.locals.admin,
   });
 });
 
@@ -136,7 +135,7 @@ exports.category_delete_post = asyncHandler(async (req, res, next) => {
       title: "Delete category: ",
       category: category,
       item_instance_list: itemInstanceList,
-      admin: admin,
+      admin: req.app.locals.admin,
     });
     return;
   } else {
@@ -160,6 +159,6 @@ exports.category_detail = asyncHandler(async (req, res, next) => {
     title: "Category: ",
     category: category,
     item_instance_list: itemInstanceList,
-    admin: admin,
+    admin: req.app.locals.admin,
   });
 });
