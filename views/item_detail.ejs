@@ -5,6 +5,9 @@
     <h1><%= title %></h1>
     <div class="item-detail">
       <h3><%= item_detail.name %></h3>
+      <% if (item_thumbnail) { %>
+        <img src="<%= item_thumbnail %>" height="250rem">
+      <% } %>
       <% if(item_detail.description) { %>
         <h4>Description: </h4><%= item_detail.description %>
       <% } %>  

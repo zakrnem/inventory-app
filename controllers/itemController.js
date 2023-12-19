@@ -71,7 +71,7 @@ exports.item_create_post = [
 
   asyncHandler(async (req, res, next) => {
     const errors = validationResult(req);
-    const filePath = (req.file) ? req.file.path : null
+    const filePath = (req.file) ? req.file.filename : null
     const item = new Item({
       name: req.body.name,
       description: req.body.description,
@@ -279,7 +279,12 @@ exports.item_detail = asyncHandler(async (req, res, next) => {
     Item.findById(req.params.id).populate("category"),
     ItemInstance.find({ item: req.params.id }).populate("location").exec(),
   ]);
-
+  
+  let thumbnail
+  if (itemDetails.thumbnail !== undefined) {
+    thumbnail = "/uploads/" + itemDetails.thumbnail
+  }
+  
   itemDetails.name = decode(decodeURIComponent(itemDetails.name));
   if (itemDetails.description)
     itemDetails.description = decode(
@@ -302,6 +307,7 @@ exports.item_detail = asyncHandler(async (req, res, next) => {
     title: "Product detail",
     item_detail: itemDetails,
     item_instances: itemInstances,
+    item_thumbnail: thumbnail,
     admin: req.app.locals.admin,
   });
 });
