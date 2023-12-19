@@ -5,7 +5,6 @@ const { body, validationResult } = require("express-validator");
 const asyncHandler = require("express-async-handler");
 const mongoose = require("mongoose");
 const decode = require("html-entities").decode;
-const admin = require("../app").admin;
 
 exports.location_list = asyncHandler(async (req, res, next) => {
   const allLocations = await Location.find({}, "name");
