@@ -5,6 +5,17 @@ const Category = require("../models/category");
 const { body, validationResult } = require("express-validator");
 const asyncHandler = require("express-async-handler");
 const decode = require("html-entities").decode;
+const multer  = require('multer')
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, 'public/uploads/')
+  },
+  filename: function (req, file, cb) {
+    const uniqueSuffix = Date.now()
+    cb(null, 'thumbnail' + '-' + uniqueSuffix)
+  }
+})
+const upload = multer({ storage: storage })
 
 exports.item_list = asyncHandler(async (req, res, next) => {
   const allItems = await Item.find({});
@@ -34,6 +45,7 @@ exports.item_create_get = asyncHandler(async (req, res, next) => {
 });
 
 exports.item_create_post = [
+  upload.single('thumbnail'),
   (req, res, next) => {
     if (!(req.body.specification instanceof Array)) {
       if (typeof req.body.specification === "undefined")
@@ -59,13 +71,14 @@ exports.item_create_post = [
 
   asyncHandler(async (req, res, next) => {
     const errors = validationResult(req);
-
+    const filePath = (req.file) ? req.file.path : null
     const item = new Item({
       name: req.body.name,
       description: req.body.description,
       category: req.body.category,
       specifications: req.body.specification,
       price: req.body.price,
+      thumbnail: filePath,
     });
 
     const existingInstance = await Item.findOne({
