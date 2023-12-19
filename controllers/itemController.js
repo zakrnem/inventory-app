@@ -6,6 +6,7 @@ const { body, validationResult } = require("express-validator");
 const asyncHandler = require("express-async-handler");
 const decode = require("html-entities").decode;
 const multer  = require('multer')
+const fs = require('fs');
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, 'public/uploads/')
@@ -147,6 +148,7 @@ exports.item_update_get = asyncHandler(async (req, res, next) => {
 });
 
 exports.item_update_post = [
+  upload.single('thumbnail'),
   (req, res, next) => {
     if (!(req.body.specification instanceof Array)) {
       if (typeof req.body.specification === "undefined")
@@ -174,6 +176,7 @@ exports.item_update_post = [
     const errors = validationResult(req);
     const itemCategory = await Category.findById(req.body.category);
     const itemName = decode(decodeURIComponent(req.body.name));
+    const filePath = (req.file) ? req.file.filename : null
     const item = new Item({
       name: itemName,
       description: req.body.description,
@@ -181,6 +184,7 @@ exports.item_update_post = [
       specifications: req.body.specification,
       price: req.body.price,
       _id: req.params.id,
+      thumbnail: filePath,
     });
 
     const existingItem = await Item.find({ name: itemName });
@@ -270,6 +274,23 @@ exports.item_delete_post = asyncHandler(async (req, res, next) => {
     return;
   } else {
     await Item.findByIdAndDelete(req.body.itemid);
+
+    let thumbnail
+    if (itemDetails.thumbnail !== undefined) {
+      thumbnail = "public/uploads/" + itemDetails.thumbnail
+    }
+    fs.stat(thumbnail, function (err, stats) {
+      console.log(stats);
+   
+      if (err) {
+          return console.error(err);
+      }
+   
+      fs.unlink(thumbnail,function(err){
+           if(err) return console.log(err);
+           console.log('file deleted successfully');
+      });  
+   });
     res.redirect("/catalog");
   }
 });
@@ -279,11 +300,6 @@ exports.item_detail = asyncHandler(async (req, res, next) => {
     Item.findById(req.params.id).populate("category"),
     ItemInstance.find({ item: req.params.id }).populate("location").exec(),
   ]);
-  
-  let thumbnail
-  if (itemDetails.thumbnail !== undefined) {
-    thumbnail = "/uploads/" + itemDetails.thumbnail
-  }
   
   itemDetails.name = decode(decodeURIComponent(itemDetails.name));
   if (itemDetails.description)
@@ -302,6 +318,11 @@ exports.item_detail = asyncHandler(async (req, res, next) => {
   itemInstances.forEach((instance) => {
     instance.location.name = decode(decodeURIComponent(instance.location.name));
   });
+
+  let thumbnail
+    if (itemDetails.thumbnail !== undefined) {
+      thumbnail = "/uploads/" + itemDetails.thumbnail
+    }
 
   res.render("item_detail", {
     title: "Product detail",
