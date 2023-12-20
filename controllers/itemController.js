@@ -173,6 +173,7 @@ exports.item_update_post = [
   body("price", "Price must be a valid number.").exists().isFloat({ min: 0 }),
 
   asyncHandler(async (req, res, next) => {
+    
     const errors = validationResult(req);
     const itemCategory = await Category.findById(req.body.category);
     const itemName = decode(decodeURIComponent(req.body.name));
@@ -186,13 +187,12 @@ exports.item_update_post = [
       _id: req.params.id,
       thumbnail: filePath,
     });
-
     const existingItem = await Item.find({ name: itemName });
     const prevValue = await Item.findById(req.params.id);
     const editPrevItem = prevValue.name === itemName;
     const existingError = existingItem.length > 0 && !editPrevItem;
 
-    if (prevValue.thumbnail !== undefined && item.thumbnail !== undefined) {
+    if ((prevValue.thumbnail !== undefined && item.thumbnail !== undefined) || req.body.delete_thumbnail === 'on') {
       const thumbnail = "public/uploads/" + prevValue.thumbnail;
       fs.stat(thumbnail, function (err, stats) {
         console.log(stats);
@@ -206,6 +206,7 @@ exports.item_update_post = [
           console.log("file deleted successfully");
         });
       });
+      if (req.body.delete_thumbnail === 'on' && !req.file) item.thumbnail = null
     }
 
     if (!errors.isEmpty() || existingError) {
@@ -336,7 +337,7 @@ exports.item_detail = asyncHandler(async (req, res, next) => {
   });
 
   let thumbnail;
-  if (itemDetails.thumbnail !== undefined) {
+  if (itemDetails.thumbnail) {
     thumbnail = "/uploads/" + itemDetails.thumbnail;
   } else  {
     thumbnail = false

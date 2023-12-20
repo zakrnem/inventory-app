@@ -15,7 +15,10 @@
                 <label for="description">Description:</label>
                 <textarea id="description" placeholder="Add a description" name="description" rows="4" cols='50'><% if (item_detail) { %><%= item_detail.description %><% } %></textarea>
             </div>
-            
+            <% if (item_detail && item_detail.thumbnail !== undefined) { %>
+                <input type="checkbox" name="delete_thumbnail">
+                <label for="delete_thumbnail">Delete current thumbnail</label>
+            <% } %>
             <div class="form-group">
                 <label for="thumbnail">Thumbnail:</label>
                 <input type="file" name="thumbnail" />
