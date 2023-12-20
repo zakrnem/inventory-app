@@ -5,18 +5,18 @@ const Category = require("../models/category");
 const { body, validationResult } = require("express-validator");
 const asyncHandler = require("express-async-handler");
 const decode = require("html-entities").decode;
-const multer  = require('multer')
-const fs = require('fs');
+const multer = require("multer");
+const fs = require("fs");
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, 'public/uploads/')
+    cb(null, "public/uploads/");
   },
   filename: function (req, file, cb) {
-    const uniqueSuffix = Date.now()
-    cb(null, 'thumbnail' + '-' + uniqueSuffix)
-  }
-})
-const upload = multer({ storage: storage })
+    const uniqueSuffix = Date.now();
+    cb(null, "thumbnail" + "-" + uniqueSuffix);
+  },
+});
+const upload = multer({ storage: storage });
 
 exports.item_list = asyncHandler(async (req, res, next) => {
   const allItems = await Item.find({});
@@ -46,7 +46,7 @@ exports.item_create_get = asyncHandler(async (req, res, next) => {
 });
 
 exports.item_create_post = [
-  upload.single('thumbnail'),
+  upload.single("thumbnail"),
   (req, res, next) => {
     if (!(req.body.specification instanceof Array)) {
       if (typeof req.body.specification === "undefined")
@@ -72,7 +72,7 @@ exports.item_create_post = [
 
   asyncHandler(async (req, res, next) => {
     const errors = validationResult(req);
-    const filePath = (req.file) ? req.file.filename : null
+    const filePath = req.file ? req.file.filename : undefined;
     const item = new Item({
       name: req.body.name,
       description: req.body.description,
@@ -148,7 +148,7 @@ exports.item_update_get = asyncHandler(async (req, res, next) => {
 });
 
 exports.item_update_post = [
-  upload.single('thumbnail'),
+  upload.single("thumbnail"),
   (req, res, next) => {
     if (!(req.body.specification instanceof Array)) {
       if (typeof req.body.specification === "undefined")
@@ -176,7 +176,7 @@ exports.item_update_post = [
     const errors = validationResult(req);
     const itemCategory = await Category.findById(req.body.category);
     const itemName = decode(decodeURIComponent(req.body.name));
-    const filePath = (req.file) ? req.file.filename : null
+    const filePath = req.file ? req.file.filename : undefined;
     const item = new Item({
       name: itemName,
       description: req.body.description,
@@ -191,6 +191,22 @@ exports.item_update_post = [
     const prevValue = await Item.findById(req.params.id);
     const editPrevItem = prevValue.name === itemName;
     const existingError = existingItem.length > 0 && !editPrevItem;
+
+    if (prevValue.thumbnail !== undefined && item.thumbnail !== undefined) {
+      const thumbnail = "public/uploads/" + prevValue.thumbnail;
+      fs.stat(thumbnail, function (err, stats) {
+        console.log(stats);
+
+        if (err) {
+          return console.error(err);
+        }
+
+        fs.unlink(thumbnail, function (err) {
+          if (err) return console.log(err);
+          console.log("file deleted successfully");
+        });
+      });
+    }
 
     if (!errors.isEmpty() || existingError) {
       const allCategories = await Category.find({});
@@ -277,20 +293,20 @@ exports.item_delete_post = asyncHandler(async (req, res, next) => {
 
     let thumbnail
     if (itemDetails.thumbnail !== undefined) {
-      thumbnail = "public/uploads/" + itemDetails.thumbnail
+      thumbnail = "public/uploads/" + itemDetails.thumbnail;
     }
     fs.stat(thumbnail, function (err, stats) {
       console.log(stats);
-   
+
       if (err) {
-          return console.error(err);
+        return console.error(err);
       }
-   
-      fs.unlink(thumbnail,function(err){
-           if(err) return console.log(err);
-           console.log('file deleted successfully');
-      });  
-   });
+
+      fs.unlink(thumbnail, function (err) {
+        if (err) return console.log(err);
+        console.log("file deleted successfully");
+      });
+    });
     res.redirect("/catalog");
   }
 });
@@ -300,7 +316,7 @@ exports.item_detail = asyncHandler(async (req, res, next) => {
     Item.findById(req.params.id).populate("category"),
     ItemInstance.find({ item: req.params.id }).populate("location").exec(),
   ]);
-  
+
   itemDetails.name = decode(decodeURIComponent(itemDetails.name));
   if (itemDetails.description)
     itemDetails.description = decode(
@@ -319,10 +335,12 @@ exports.item_detail = asyncHandler(async (req, res, next) => {
     instance.location.name = decode(decodeURIComponent(instance.location.name));
   });
 
-  let thumbnail
-    if (itemDetails.thumbnail !== undefined) {
-      thumbnail = "/uploads/" + itemDetails.thumbnail
-    }
+  let thumbnail;
+  if (itemDetails.thumbnail !== undefined) {
+    thumbnail = "/uploads/" + itemDetails.thumbnail;
+  } else  {
+    thumbnail = false
+  }
 
   res.render("item_detail", {
     title: "Product detail",
