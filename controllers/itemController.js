@@ -7,6 +7,7 @@ const asyncHandler = require("express-async-handler");
 const decode = require("html-entities").decode;
 const multer = require("multer");
 const fs = require("fs");
+const path = require("path");
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, "public/uploads/");
@@ -16,7 +17,19 @@ const storage = multer.diskStorage({
     cb(null, "thumbnail" + "-" + uniqueSuffix);
   },
 });
-const upload = multer({ storage: storage });
+const upload = multer({
+  storage: storage,
+  fileFilter: function (req, file, callback) {
+    var ext = path.extname(file.originalname);
+    if (ext !== ".png" && ext !== ".jpg" && ext !== ".gif" && ext !== ".jpeg") {
+      return callback(new Error("Only images are allowed"));
+    }
+    callback(null, true);
+  },
+  limits: {
+    fileSize: 1200000,
+  },
+});
 
 exports.item_list = asyncHandler(async (req, res, next) => {
   const allItems = await Item.find({});
