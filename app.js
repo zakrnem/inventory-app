@@ -6,6 +6,7 @@ var cookieParser = require("cookie-parser");
 var logger = require("morgan");
 const compression = require("compression");
 const helmet = require("helmet");
+const multer = require("multer");
 require("dotenv").config();
 
 // Set up mongoose connection
@@ -54,9 +55,24 @@ app.use(function (err, req, res, next) {
   res.locals.message = err.message;
   res.locals.error = req.app.get("env") === "development" ? err : {};
 
-  // render the error page
-  res.status(err.status || 500);
-  res.render("error");
+  if (err instanceof multer.MulterError) {
+    // Multer errors (e.g., file size exceeded, file type not allowed)
+    res.status(400).render("error", {
+      title: "Error",
+      message: "File upload error: " + err.message,
+      dev_mode: app.locals.devMode,
+    });
+  } else {
+    // render the error page
+    res.status(err.status || 500);
+    res.render("error", {
+      title: "Error",
+      dev_mode: app.locals.devMode,
+    });
+  }
 });
+
+app.locals.admin = true;
+app.locals.devMode = false;
 
 module.exports = app;

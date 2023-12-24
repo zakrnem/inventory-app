@@ -1,0 +1,68 @@
+<%- include('./partials/head', {title: title}) %>
+<%- include('./partials/header', {admin: admin}) %>
+    <body>
+        <h1><%= title %></h1>
+        <form method="POST" action>
+            <div class="form-group">
+                <label for="item">
+                    Product:
+                </label>
+                <select id="item" type="select" placeholder="Select product" name="item" required="true">
+                    <% item_list.forEach((item) => { %>
+                        <% if (item_instance) { %>
+                            <option value="<%= item._id %>" <%= (item._id.toString() === selected_item.toString()) ? 'selected' : '' %>>
+                                <%= item.name %>
+                            </option>
+                        <% } else { %>
+                            <option value="<%= item._id %>"><%= item.name %></option>
+                        <% } %>
+                    <% }) %>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="sku">Sku: </label>
+                <% if (item_instance) { %>
+                    <input id="sku" type="text" placeholder="Insert a SKU code" name="sku" value="<%= item_instance.sku %>">
+                <% } else { %>
+                    <input id="sku" type="text" placeholder="Insert a SKU code" name="sku">
+                <% } %>
+            </div>
+            <div class="form-group">
+                <label for="location">Location: </label>
+                <select id="location" type="select" placeholder="Select location" name="location" required="true">
+                    <% location_list.forEach((location) => { %>
+                        <% if (item_instance) { %>
+                            <option value="<%= location._id %>" 
+                            <%= (location._id.toString() === item_instance.location.toString()) ? 'selected' : '' %>>
+                            <%= location.name %></option>
+                        <% } else { %>
+                            <option value="<%= location._id %>"><%= location.name %></option>
+                        <% } %>                       
+                    <% }) %>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="stock_at_location">Stock at location</label>
+                <% if (item_instance) { %>
+                    <input id="stock_at_location" type="number" placeholder="Insert number in stock" name="stock_at_location" 
+                    value="<%= item_instance.stock_at_location %>">
+                <% } else { %>
+                    <input id="stock_at_location" type="number" placeholder="Insert number in stock" name="stock_at_location">
+                <% } %>                    
+            </div>
+            <button type="submit">Submit</button>
+        </form>
+        <div class="errors">
+            <ul>
+            <% if (errors) { %>
+                    <% errors.forEach((error) => { %>
+                        <li><%= error.msg %></li>
+                    <% }) %>
+            <% } %>
+            <% if (existing_error) { %>
+                <li>An instance with the same product name and location already exists.</li>
+            <% } %>
+            </ul>
+        </div>
+    </body>
+</html>

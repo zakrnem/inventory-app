@@ -1,0 +1,29 @@
+<%- include('./partials/head', {title: title}) %>
+<%- include('./partials/header', {admin: admin}) %>
+  <body>
+    <h1><%= title %><%= location.name %></h1>
+    <div class="location-detail">
+        <% if (item_instance_list.length > 0) { %>
+            <h2>Product instances: </h2>
+            <div class="item-instance-list">
+                <% item_instance_list.forEach((itemInstance) => { %>
+                    <h3><a href="<%= itemInstance.url %>"><%= itemInstance.item.name %></a></h3>
+                    <p><strong>Stock at location: </strong><%= itemInstance.stock_at_location %></p>
+                    <br>
+                <% }) %>
+            </div>
+        <% } else { %>
+            <div>
+                <p>There are no products on this location</p>
+            </div>
+        <% } %>
+    </div>
+    <% if (admin) { %>
+        <div class="crud">
+          <a href='<%= location._id %>/delete'>Delete location</a>
+          <br>
+          <a href='<%= location._id %>/update'>Update location</a>
+        </div>
+    <% } %>
+</body>
+</html>

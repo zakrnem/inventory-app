@@ -1,0 +1,15 @@
+<%- include('./partials/head', {title: title}) %>
+<%- include('./partials/header', {admin: admin}) %>
+  <body>
+    <h1><%= title %></h1>
+    <ul>
+      <% iteminstance_list.forEach((instance) => { %>
+        <li class="list-instance">
+          <a href="<%= instance.url %>"><%= instance.item.name %></a>
+          - Location: <%= instance.location.name %>
+          - Stock: <%= instance.stock_at_location %>
+        </li>
+      <% }); %>
+    </ul>
+  </body>
+</html>

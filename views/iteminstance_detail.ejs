@@ -1,0 +1,21 @@
+<%- include('./partials/head', {title: title}) %>
+<%- include('./partials/header', {admin: admin}) %>
+
+  <body>
+    <h1><%= title %> <%= iteminstance_detail.item._id %></h1>
+    <div class="iteminstance-detail">
+      <h4>Title: </h4><%= iteminstance_detail.item.name %>
+      <% if (iteminstance_detail.sku) { %>
+      <h4>Sku: </h4><%= iteminstance_detail.sku %><% } %>
+      <h4>Location: </h4><%= iteminstance_detail.location.name %>
+      <h4>Stock at location: </h4><%= iteminstance_detail.stock_at_location %>
+    </div>
+    <% if (admin) { %>
+      <div class="crud">
+        <a href='<%= iteminstance_detail._id %>/delete'>Delete product instance</a>
+        <br>
+        <a href='<%= iteminstance_detail._id %>/update'>Update product instance</a>
+      </div>
+    <% } %>
+  </body>
+</html>

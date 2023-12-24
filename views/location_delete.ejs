@@ -1,0 +1,35 @@
+<%- include('./partials/head', {title: title}) %>
+<%- include('./partials/header', {admin: admin}) %>
+    <body>
+        <div class="location-delete">
+            <h1>
+                <%= title %> <%= location.name %>
+            </h1>
+            <div class="delete-message">
+                <% if (item_instance_list.length === 0) { %>
+                    <p>
+                        Do you really want to delete this location?
+                    </p>
+                    <form method="POST">
+                        <input class="form-control" id="locationid" type="hidden" name="locationid" required="true" value="<%= location._id %>">
+                        <button id="delete-location" type="submit">Delete location</button>
+                    </form>
+                <% } else { %>
+                    <p>
+                        Please delete the following products before attempting to delete this location.
+                    </p>
+                    <div class="item-items">
+                        <h2>Products:</h2>
+                            <% item_instance_list.forEach((itemInstance) => { %>
+                                <div class="item-details">
+                                    <h3><a href="<%= itemInstance.url %>"><%= itemInstance.item.name %></a></h3>
+                                    <p><%= itemInstance.item.description %></p>
+                                    <hr>
+                                </div>
+                            <% }); %>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+    </body>
+</html>

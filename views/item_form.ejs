@@ -2,26 +2,34 @@
 <%- include('./partials/header', {admin: admin}) %>
     <body>
         <h1><%= title %></h1>
-        <form method="POST" action>
+        <form method="POST" enctype="multipart/form-data" action>
             <div class="form-group">
                 <label for="name">Title:</label>
-                <% if (item) { %>
-                    <input id="name" type="text" placeholder="Name of the product" name="name" required="true" value="<%= item.name %>">
+                <% if (item_detail) { %>
+                    <input id="name" type="text" placeholder="Name of the product" name="name" required="true" value="<%= item_detail.name %>">
                 <% } else { %>
                     <input id="name" type="text" placeholder="Name of the product" name="name" required="true">
                 <% } %>
             </div>
             <div class="form-group">
                 <label for="description">Description:</label>
-                <textarea id="description" placeholder="Add a description" name="description" rows="4" cols='50'><% if (item) { %><%= item.description %><% } %></textarea>
+                <textarea id="description" placeholder="Add a description" name="description" rows="4" cols='50'><% if (item_detail) { %><%= item_detail.description %><% } %></textarea>
+            </div>
+            <% if (item_detail && item_detail.thumbnail !== undefined) { %>
+                <input type="checkbox" name="delete_thumbnail">
+                <label for="delete_thumbnail">Delete current thumbnail</label>
+            <% } %>
+            <div class="form-group">
+                <label for="thumbnail">Thumbnail:</label>
+                <input type="file" name="thumbnail" />
             </div>
             <div class="form-group">
                 <label for="category">Category:</label>
                 <div>
                     <% categories.forEach((category) => { %>
-                        <% if (item) { %>
+                        <% if (item_detail) { %>
                             <input type="radio" id="<%= category._id %>" name="category" value="<%= category._id %>"
-                            <%= (item.category && (item.category.name === category.name)) ? 'checked' : ''  %>
+                            <%= (item_detail.category && (item_detail.category.name === category.name)) ? 'checked' : ''  %>
                         <% } else { %>
                             <input type="radio" id="<%= category._id %>" name="category" value="<%= category._id %>" %>>
                         <% } %>
@@ -33,12 +41,12 @@
                 <label for="specifications">Specifications:</label>
                 <div class="spec-list">
                     <% let count=0 %>
-                    <% if (item && item.specifications.length > 0) { %>
-                        <% item.specifications.forEach((spec) => { %>
+                    <% if (item_detail && item_detail.specifications.length > 0) { %>
+                        <% item_detail.specifications.forEach((spec) => { %>
                             <% ++count%>
                             <input id='spec<%= count %>' type="text" placeholder='Specification #<%= count %>' name='specification'
                             value="<%= spec %>">
-                            <% if (count === item.specifications.length) { %>
+                            <% if (count === item_detail.specifications.length) { %>
                                 <button id="add-spec">+Add specification</button>
                             <% } %>
                         <% }) %>
@@ -51,17 +59,22 @@
             </div>
             <div class="form-group">
                 <label for="price">Price: </label>
-                <input id="price" type="number" placeholder="0.00" name="price" required="true" value="<%= item.price %>">
+                <input id="price" type="number" placeholder="0.00" name="price" required="true" value="<%= item_detail.price %>">
             </div>
             <button type="submit">Submit</button>
         </form>
-        <% if (errors) { %>
-            <ul>
-                <% errors.forEach((error) => { %>
-                    <li><%= error.msg %></li>
-                <% }) %>
-            </ul>
-        <% } %>
+        <div class="errors">
+            <% if (errors) { %>
+                <ul>
+                    <% errors.forEach((error) => { %>
+                        <li><%= error.msg %></li>
+                    <% }) %>
+                </ul>
+            <% } %>
+            <% if (existing_error) { %>
+                <li>A product with the same name already exists.</li>
+            <% } %>
+        </div>
         <script type="text/javascript" src="/javascripts/addSpec.js"></script>
     </body>
 </html>

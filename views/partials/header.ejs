@@ -1,11 +1,12 @@
 <header>
     <div class="nav_links">
         <a href="/">Products</a>
-        <a href="">Categories</a>
-        <a href="">Locations</a>
+        <a href="/catalog/categories">Categories</a>
+        <a href="/catalog/locations">Locations</a>
     </div>
     <% if (admin) { %>
         <div class="admin-crud">
+            <a href="/catalog/iteminstances">All product instaces</a> | 
             <a href="/catalog/item/create">Create new product</a>
             <a href="/catalog/iteminstance/create">Create new product instance</a>
             <a href="/catalog/location/create">Create new location</a>

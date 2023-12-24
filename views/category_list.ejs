@@ -1,0 +1,13 @@
+<%- include('./partials/head', {title: title}) %>
+<%- include('./partials/header', {admin: admin}) %>
+  <body>
+    <h1><%= title %></h1>
+    <ul>
+      <% category_list.forEach((category) => { %>
+        <li class="list-category">
+          <a href="<%= category.url %>"><%= category.name %></a>
+        </li>
+      <% }); %>
+    </ul>
+  </body>
+</html>
