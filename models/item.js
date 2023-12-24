@@ -14,8 +14,4 @@ ItemSchema.virtual("url").get(function () {
   return `/catalog/item/${this._id}`;
 });
 
-ItemSchema.virtual("number_in_stock").get(function () {
-  return `NOT IMPLEMENTED`;
-});
-
 module.exports = mongoose.model("Item", ItemSchema);
